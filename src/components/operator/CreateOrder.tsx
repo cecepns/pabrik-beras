@@ -1,0 +1,398 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import Layout from '../Layout';
+import toast from 'react-hot-toast';
+import { ArrowLeft, Upload, MapPin, Calculator, Fuel } from 'lucide-react';
+
+const CreateOrder: React.FC = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [gpsLoading, setGpsLoading] = useState(false);
+  const [settings, setSettings] = useState({ harga_per_kg: 0, konsumsi_bbm_per_kg: 0 });
+  
+  const [formData, setFormData] = useState({
+    nama_pelanggan: '',
+    kontak_pelanggan: '',
+    nama_karnet: '',
+    jumlah_karung: '',
+    berat_gabah_kg: '',
+    bukti_foto: null as File | null,
+    lokasi_pengolahan: '',
+    catatan: '',
+    alamat_pengambilan: ''
+  });
+
+  useEffect(() => {
+    fetchSettings();
+    getCurrentLocation();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/settings', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setSettings(data);
+      }
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+    }
+  };
+
+  const getCurrentLocation = () => {
+    setGpsLoading(true);
+    
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          try {
+            // For demo purposes, we'll use a simple address format
+            const { latitude, longitude } = position.coords;
+            const address = `Lat: ${latitude.toFixed(6)}, Lng: ${longitude.toFixed(6)}`;
+            
+            setFormData(prev => ({
+              ...prev,
+              alamat_pengambilan: address
+            }));
+          } catch (error) {
+            console.error('Error getting address:', error);
+            setFormData(prev => ({
+              ...prev,
+              alamat_pengambilan: 'Alamat tidak dapat dideteksi'
+            }));
+          } finally {
+            setGpsLoading(false);
+          }
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          setFormData(prev => ({
+            ...prev,
+            alamat_pengambilan: 'GPS tidak dapat diakses'
+          }));
+          setGpsLoading(false);
+          toast.error('Tidak dapat mengakses GPS. Pastikan izin lokasi diberikan.');
+        }
+      );
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        alamat_pengambilan: 'GPS tidak tersedia'
+      }));
+      setGpsLoading(false);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFormData(prev => ({
+        ...prev,
+        bukti_foto: e.target.files![0]
+      }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const submitData = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value !== null) {
+        submitData.append(key, value as string | File);
+      }
+    });
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/orders', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: submitData
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success('Order berhasil dibuat');
+        navigate('/');
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error('Terjadi kesalahan koneksi');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const estimasiHarga = parseFloat(formData.berat_gabah_kg) * settings.harga_per_kg || 0;
+  const estimasiKonsumsi = parseFloat(formData.berat_gabah_kg) * settings.konsumsi_bbm_per_kg || 0;
+
+  return (
+    <Layout>
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-6">
+          <button
+            onClick={() => navigate('/')}
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Kembali ke Dashboard</span>
+          </button>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm border p-6">
+          <h1 className="text-2xl font-bold text-gray-900 mb-6">Buat Order Baru</h1>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Customer Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Nama Pemilik Gabah/Padi *
+                </label>
+                <input
+                  type="text"
+                  name="nama_pelanggan"
+                  value={formData.nama_pelanggan}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Kontak Pemilik
+                </label>
+                <input
+                  type="text"
+                  name="kontak_pelanggan"
+                  value={formData.kontak_pelanggan}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                  placeholder="Nomor telepon (opsional)"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nama Karnet
+              </label>
+              <input
+                type="text"
+                name="nama_karnet"
+                value={formData.nama_karnet}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                placeholder="Nama karnet (opsional)"
+              />
+            </div>
+
+            {/* Gabah Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Jumlah Karung *
+                </label>
+                <input
+                  type="number"
+                  name="jumlah_karung"
+                  value={formData.jumlah_karung}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                  min="1"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Total Berat Gabah (kg) *
+                </label>
+                <input
+                  type="number"
+                  name="berat_gabah_kg"
+                  value={formData.berat_gabah_kg}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                  min="0.01"
+                  step="0.01"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Calculations */}
+            {formData.berat_gabah_kg && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Calculator className="w-5 h-5 text-green-600" />
+                    <span className="font-medium text-green-800">Estimasi Harga Jasa</span>
+                  </div>
+                  <p className="text-2xl font-bold text-green-900">
+                    Rp {estimasiHarga.toLocaleString('id-ID')}
+                  </p>
+                  <p className="text-xs text-green-600">
+                    {formData.berat_gabah_kg} kg × Rp {settings.harga_per_kg.toLocaleString('id-ID')}/kg
+                  </p>
+                </div>
+
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Fuel className="w-5 h-5 text-blue-600" />
+                    <span className="font-medium text-blue-800">Estimasi Konsumsi BBM</span>
+                  </div>
+                  <p className="text-2xl font-bold text-blue-900">
+                    {estimasiKonsumsi.toFixed(2)} L
+                  </p>
+                  <p className="text-xs text-blue-600">
+                    {formData.berat_gabah_kg} kg × {settings.konsumsi_bbm_per_kg} L/kg
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Photo Upload */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Bukti Foto *
+              </label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-400 transition-colors">
+                <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                <div className="mt-4">
+                  <label htmlFor="bukti_foto" className="cursor-pointer">
+                    <span className="mt-2 block text-sm font-medium text-gray-900">
+                      Upload foto bukti gabah
+                    </span>
+                    <span className="mt-1 block text-sm text-gray-600">
+                      PNG, JPG, JPEG hingga 5MB
+                    </span>
+                  </label>
+                  <input
+                    id="bukti_foto"
+                    name="bukti_foto"
+                    type="file"
+                    className="sr-only"
+                    accept="image/jpeg,image/jpg,image/png"
+                    onChange={handleFileChange}
+                    required
+                  />
+                </div>
+                {formData.bukti_foto && (
+                  <p className="mt-2 text-sm text-green-600">
+                    File terpilih: {formData.bukti_foto.name}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tempat Pengolahan *
+              </label>
+              <input
+                type="text"
+                name="lokasi_pengolahan"
+                value={formData.lokasi_pengolahan}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                placeholder="Masukkan tempat pengolahan"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Catatan
+              </label>
+              <textarea
+                name="catatan"
+                value={formData.catatan}
+                onChange={handleInputChange}
+                rows={3}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                placeholder="Catatan tambahan (opsional)"
+              />
+            </div>
+
+            {/* Auto-filled Information */}
+            <div className="bg-gray-50 p-4 rounded-lg space-y-3">
+              <h3 className="font-medium text-gray-900">Informasi Otomatis</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm text-gray-600">Operator</label>
+                  <p className="text-sm font-medium text-gray-900">{user?.nama_lengkap}</p>
+                </div>
+                
+                <div>
+                  <label className="block text-sm text-gray-600">Kode Mesin</label>
+                  <p className="text-sm font-medium text-gray-900">{user?.kode_mesin || 'Tidak ada mesin'}</p>
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-center space-x-2 mb-2">
+                  <MapPin className="w-4 h-4 text-gray-500" />
+                  <label className="text-sm text-gray-600">Alamat Pengambilan (GPS)</label>
+                  {gpsLoading && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-500"></div>}
+                </div>
+                <p className="text-sm text-gray-900 bg-white p-2 rounded border">
+                  {formData.alamat_pengambilan || 'Mengambil lokasi...'}
+                </p>
+              </div>
+            </div>
+
+            {/* Submit Buttons */}
+            <div className="flex space-x-4 pt-6">
+              <button
+                type="button"
+                onClick={() => navigate('/')}
+                className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                disabled={loading || !user?.kode_mesin}
+                className="flex-1 px-4 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? 'Menyimpan...' : 'Simpan Order'}
+              </button>
+            </div>
+
+            {!user?.kode_mesin && (
+              <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-sm text-yellow-800">
+                  ⚠️ Anda belum ditugaskan ke mesin manapun. Hubungi admin untuk assignment mesin.
+                </p>
+              </div>
+            )}
+          </form>
+        </div>
+      </div>
+    </Layout>
+  );
+};
+
+export default CreateOrder;
