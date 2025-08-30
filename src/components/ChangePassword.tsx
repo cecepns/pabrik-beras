@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Layout from './Layout';
-import { Lock, ArrowLeft } from 'lucide-react';
+import { Lock, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 
 const ChangePassword: React.FC = () => {
   const navigate = useNavigate();
@@ -12,6 +12,9 @@ const ChangePassword: React.FC = () => {
     konfirmasi_kata_sandi: ''
   });
   const [loading, setLoading] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,44 +84,83 @@ const ChangePassword: React.FC = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Kata Sandi Lama
               </label>
-              <input
-                type="password"
-                value={passwords.kata_sandi_lama}
-                onChange={(e) => setPasswords(prev => ({ ...prev, kata_sandi_lama: e.target.value }))}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
-                placeholder="Masukkan kata sandi lama"
-                required
-              />
+              <div className="relative">
+                <input
+                  type={showOldPassword ? "text" : "password"}
+                  value={passwords.kata_sandi_lama}
+                  onChange={(e) => setPasswords(prev => ({ ...prev, kata_sandi_lama: e.target.value }))}
+                  className="w-full pr-12 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                  placeholder="Masukkan kata sandi lama"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowOldPassword(!showOldPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  {showOldPassword ? (
+                    <EyeOff className="h-5 w-5 text-gray-500" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-gray-500" />
+                  )}
+                </button>
+              </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Kata Sandi Baru
               </label>
-              <input
-                type="password"
-                value={passwords.kata_sandi_baru}
-                onChange={(e) => setPasswords(prev => ({ ...prev, kata_sandi_baru: e.target.value }))}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
-                placeholder="Masukkan kata sandi baru"
-                required
-                minLength={6}
-              />
+              <div className="relative">
+                <input
+                  type={showNewPassword ? "text" : "password"}
+                  value={passwords.kata_sandi_baru}
+                  onChange={(e) => setPasswords(prev => ({ ...prev, kata_sandi_baru: e.target.value }))}
+                  className="w-full pr-12 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                  placeholder="Masukkan kata sandi baru"
+                  required
+                  minLength={6}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  {showNewPassword ? (
+                    <EyeOff className="h-5 w-5 text-gray-500" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-gray-500" />
+                  )}
+                </button>
+              </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Konfirmasi Kata Sandi Baru
               </label>
-              <input
-                type="password"
-                value={passwords.konfirmasi_kata_sandi}
-                onChange={(e) => setPasswords(prev => ({ ...prev, konfirmasi_kata_sandi: e.target.value }))}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
-                placeholder="Konfirmasi kata sandi baru"
-                required
-                minLength={6}
-              />
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={passwords.konfirmasi_kata_sandi}
+                  onChange={(e) => setPasswords(prev => ({ ...prev, konfirmasi_kata_sandi: e.target.value }))}
+                  className="w-full pr-12 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                  placeholder="Konfirmasi kata sandi baru"
+                  required
+                  minLength={6}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-5 w-5 text-gray-500" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-gray-500" />
+                  )}
+                </button>
+              </div>
             </div>
 
             <div className="flex space-x-4">

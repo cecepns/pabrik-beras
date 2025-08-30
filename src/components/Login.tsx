@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Wheat, Lock, User } from 'lucide-react';
+import { Wheat, Lock, User, Eye, EyeOff } from 'lucide-react';
 
 const Login: React.FC = () => {
   const [credentials, setCredentials] = useState({
@@ -8,6 +8,7 @@ const Login: React.FC = () => {
     kata_sandi: ''
   });
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -57,13 +58,24 @@ const Login: React.FC = () => {
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={credentials.kata_sandi}
                 onChange={(e) => setCredentials(prev => ({ ...prev, kata_sandi: e.target.value }))}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
                 placeholder="Masukkan password"
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              >
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5 text-gray-500" />
+                ) : (
+                  <Eye className="h-5 w-5 text-gray-500" />
+                )}
+              </button>
             </div>
           </div>
 
