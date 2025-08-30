@@ -4,14 +4,14 @@ import toast from 'react-hot-toast';
 import { DollarSign, Fuel, Save } from 'lucide-react';
 
 interface Settings {
-  harga_per_kg: number;
-  konsumsi_bbm_per_kg: number;
+  harga_per_kg: number | string;
+  konsumsi_bbm_per_kg: number | string;
 }
 
 const Settings: React.FC = () => {
   const [settings, setSettings] = useState<Settings>({
-    harga_per_kg: 0,
-    konsumsi_bbm_per_kg: 0
+    harga_per_kg: '',
+    konsumsi_bbm_per_kg: ''
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
@@ -67,7 +67,8 @@ const Settings: React.FC = () => {
 
   const handleSubmit = (key: string) => (e: React.FormEvent) => {
     e.preventDefault();
-    updateSetting(key, settings[key as keyof Settings]);
+    const value = settings[key as keyof Settings];
+    updateSetting(key, typeof value === 'number' ? value : Number(value));
   };
 
   if (loading) {
@@ -114,11 +115,9 @@ const Settings: React.FC = () => {
                     <input
                       type="number"
                       value={settings.harga_per_kg}
-                      onChange={(e) => setSettings(prev => ({ ...prev, harga_per_kg: parseFloat(e.target.value) || 0 }))}
+                      onChange={(e) => setSettings(prev => ({ ...prev, harga_per_kg: e.target.value }))}
                       className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
                       placeholder="0"
-                      min="0"
-                      step="50"
                       required
                     />
                   </div>
@@ -159,11 +158,9 @@ const Settings: React.FC = () => {
                     <input
                       type="number"
                       value={settings.konsumsi_bbm_per_kg}
-                      onChange={(e) => setSettings(prev => ({ ...prev, konsumsi_bbm_per_kg: parseFloat(e.target.value) || 0 }))}
+                      onChange={(e) => setSettings(prev => ({ ...prev, konsumsi_bbm_per_kg: e.target.value }))}
                       className="w-full px-4 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                       placeholder="0.1"
-                      min="0"
-                      step="0.01"
                       required
                     />
                   </div>

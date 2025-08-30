@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../Layout';
 import toast from 'react-hot-toast';
-import { Plus, Edit, Trash2, RotateCcw, X } from 'lucide-react';
+import { Plus, Edit, Trash2, RotateCcw, X, Eye, EyeOff } from 'lucide-react';
 
 interface User {
   id: number;
@@ -26,6 +26,7 @@ const ManageUsers: React.FC = () => {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [pagination, setPagination] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     nama_pengguna: '',
@@ -370,14 +371,27 @@ const ManageUsers: React.FC = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Kata Sandi *
                     </label>
-                    <input
-                      type="password"
-                      value={formData.kata_sandi}
-                      onChange={(e) => setFormData(prev => ({ ...prev, kata_sandi: e.target.value }))}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
-                      required
-                      minLength={6}
-                    />
+                    <div className="relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        value={formData.kata_sandi}
+                        onChange={(e) => setFormData(prev => ({ ...prev, kata_sandi: e.target.value }))}
+                        className="w-full pr-10 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                        required
+                        minLength={6}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-5 w-5 text-gray-500" />
+                        ) : (
+                          <Eye className="h-5 w-5 text-gray-500" />
+                        )}
+                      </button>
+                    </div>
                   </div>
                 )}
 
