@@ -87,12 +87,6 @@ const Login: React.FC = () => {
             {loading ? 'Memproses...' : 'Login'}
           </button>
         </form>
-
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-          <p className="text-sm text-blue-800 font-medium mb-2">Demo Accounts:</p>
-          <p className="text-xs text-blue-600">Admin: admin / admin123</p>
-          <p className="text-xs text-blue-600">Operator: operator1 / operator123</p>
-        </div>
       </div>
     </div>
   );
