@@ -178,22 +178,22 @@ const CreateOrder: React.FC = () => {
   return (
     <Layout>
       <div className="max-w-4xl mx-auto">
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6">
           <button
             onClick={() => navigate('/')}
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors text-sm sm:text-base"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Kembali ke Dashboard</span>
           </button>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">Buat Order Baru</h1>
+        <div className="bg-white rounded-xl shadow-sm border p-4 sm:p-6">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Buat Order Baru</h1>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Customer Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Nama Pemilik Gabah/Padi *
@@ -203,7 +203,7 @@ const CreateOrder: React.FC = () => {
                   name="nama_pelanggan"
                   value={formData.nama_pelanggan}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm sm:text-base"
                   required
                 />
               </div>
@@ -217,7 +217,7 @@ const CreateOrder: React.FC = () => {
                   name="kontak_pelanggan"
                   value={formData.kontak_pelanggan}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm sm:text-base"
                   placeholder="Nomor telepon (opsional)"
                 />
               </div>
@@ -232,13 +232,13 @@ const CreateOrder: React.FC = () => {
                 name="nama_karnet"
                 value={formData.nama_karnet}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm sm:text-base"
                 placeholder="Nama karnet (opsional)"
               />
             </div>
 
             {/* Gabah Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Jumlah Karung *
@@ -248,7 +248,7 @@ const CreateOrder: React.FC = () => {
                   name="jumlah_karung"
                   value={formData.jumlah_karung}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm sm:text-base"
                   min="1"
                   required
                 />
@@ -263,7 +263,7 @@ const CreateOrder: React.FC = () => {
                   name="berat_gabah_kg"
                   value={formData.berat_gabah_kg}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm sm:text-base"
                   min="0.01"
                   step="0.01"
                   required
@@ -273,13 +273,13 @@ const CreateOrder: React.FC = () => {
 
             {/* Calculations */}
             {formData.berat_gabah_kg && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-green-50 p-4 rounded-lg">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                <div className="bg-green-50 p-3 sm:p-4 rounded-lg">
                   <div className="flex items-center space-x-2 mb-2">
-                    <Calculator className="w-5 h-5 text-green-600" />
-                    <span className="font-medium text-green-800">Estimasi Harga Jasa</span>
+                    <Calculator className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+                    <span className="font-medium text-green-800 text-sm sm:text-base">Estimasi Harga Jasa</span>
                   </div>
-                  <p className="text-2xl font-bold text-green-900">
+                  <p className="text-xl sm:text-2xl font-bold text-green-900">
                     Rp {estimasiHarga.toLocaleString('id-ID')}
                   </p>
                   <p className="text-xs text-green-600">
@@ -287,12 +287,12 @@ const CreateOrder: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="bg-blue-50 p-3 sm:p-4 rounded-lg">
                   <div className="flex items-center space-x-2 mb-2">
-                    <Fuel className="w-5 h-5 text-blue-600" />
-                    <span className="font-medium text-blue-800">Estimasi Konsumsi BBM</span>
+                    <Fuel className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                    <span className="font-medium text-blue-800 text-sm sm:text-base">Estimasi Konsumsi BBM</span>
                   </div>
-                  <p className="text-2xl font-bold text-blue-900">
+                  <p className="text-xl sm:text-2xl font-bold text-blue-900">
                     {estimasiKonsumsi.toFixed(2)} L
                   </p>
                   <p className="text-xs text-blue-600">
@@ -307,14 +307,14 @@ const CreateOrder: React.FC = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Bukti Foto *
               </label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-400 transition-colors">
-                <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                <div className="mt-4">
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 sm:p-6 text-center hover:border-green-400 transition-colors">
+                <Upload className="mx-auto h-8 w-8 sm:h-12 sm:w-12 text-gray-400" />
+                <div className="mt-3 sm:mt-4">
                   <label htmlFor="bukti_foto" className="cursor-pointer">
                     <span className="mt-2 block text-sm font-medium text-gray-900">
                       Upload foto bukti gabah
                     </span>
-                    <span className="mt-1 block text-sm text-gray-600">
+                    <span className="mt-1 block text-xs sm:text-sm text-gray-600">
                       PNG, JPG, JPEG hingga 5MB (maksimal 10 foto)
                     </span>
                   </label>
@@ -334,9 +334,9 @@ const CreateOrder: React.FC = () => {
                     <p className="text-sm text-green-600 font-medium">
                       {formData.bukti_foto.length} file terpilih:
                     </p>
-                    <ul className="mt-1 text-sm text-gray-600">
+                    <ul className="mt-1 text-xs sm:text-sm text-gray-600">
                       {formData.bukti_foto.map((file, index) => (
-                        <li key={index}>• {file.name}</li>
+                        <li key={index} className="truncate">• {file.name}</li>
                       ))}
                     </ul>
                   </div>
@@ -353,7 +353,7 @@ const CreateOrder: React.FC = () => {
                 name="lokasi_pengolahan"
                 value={formData.lokasi_pengolahan}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm sm:text-base"
                 placeholder="Masukkan tempat pengolahan"
                 required
               />
@@ -368,60 +368,60 @@ const CreateOrder: React.FC = () => {
                 value={formData.catatan}
                 onChange={handleInputChange}
                 rows={3}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm sm:text-base"
                 placeholder="Catatan tambahan (opsional)"
               />
             </div>
 
             {/* Auto-filled Information */}
-            <div className="bg-gray-50 p-4 rounded-lg space-y-3">
-              <h3 className="font-medium text-gray-900">Informasi Otomatis</h3>
+            <div className="bg-gray-50 p-3 sm:p-4 rounded-lg space-y-3">
+              <h3 className="font-medium text-gray-900 text-sm sm:text-base">Informasi Otomatis</h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className="block text-sm text-gray-600">Operator</label>
+                  <label className="block text-xs sm:text-sm text-gray-600">Operator</label>
                   <p className="text-sm font-medium text-gray-900">{user?.nama_lengkap}</p>
                 </div>
                 
                 <div>
-                  <label className="block text-sm text-gray-600">Kode Mesin</label>
+                  <label className="block text-xs sm:text-sm text-gray-600">Kode Mesin</label>
                   <p className="text-sm font-medium text-gray-900">{user?.kode_mesin || 'Tidak ada mesin'}</p>
                 </div>
               </div>
 
               <div>
                 <div className="flex items-center space-x-2 mb-2">
-                  <MapPin className="w-4 h-4 text-gray-500" />
-                  <label className="text-sm text-gray-600">Alamat Pengambilan (GPS)</label>
-                  {gpsLoading && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-500"></div>}
+                  <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500" />
+                  <label className="text-xs sm:text-sm text-gray-600">Alamat Pengambilan (GPS)</label>
+                  {gpsLoading && <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-green-500"></div>}
                 </div>
-                <p className="text-sm text-gray-900 bg-white p-2 rounded border">
+                <p className="text-xs sm:text-sm text-gray-900 bg-white p-2 rounded border">
                   {formData.alamat_pengambilan || 'Mengambil lokasi...'}
                 </p>
               </div>
             </div>
 
             {/* Submit Buttons */}
-            <div className="flex space-x-4 pt-6">
+            <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-4 sm:pt-6">
               <button
                 type="button"
                 onClick={() => navigate('/')}
-                className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="w-full sm:flex-1 px-4 py-2.5 sm:py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base"
               >
                 Batal
               </button>
               <button
                 type="submit"
                 disabled={loading || !user?.kode_mesin}
-                className="flex-1 px-4 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full sm:flex-1 px-4 py-2.5 sm:py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
               >
                 {loading ? 'Menyimpan...' : 'Simpan Order'}
               </button>
             </div>
 
             {!user?.kode_mesin && (
-              <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p className="text-sm text-yellow-800">
+              <div className="p-3 sm:p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-xs sm:text-sm text-yellow-800">
                   ⚠️ Anda belum ditugaskan ke mesin manapun. Hubungi admin untuk assignment mesin.
                 </p>
               </div>
