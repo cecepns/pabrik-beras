@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import Layout from '../Layout';
@@ -29,6 +29,11 @@ const CreateOrder: React.FC = () => {
     getCurrentLocation();
   }, []);
 
+  // Debug log untuk settings
+  useEffect(() => {
+    console.log('Current settings state:', settings);
+  }, [settings]);
+
   const fetchSettings = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -38,7 +43,10 @@ const CreateOrder: React.FC = () => {
       
       if (response.ok) {
         const data = await response.json();
+        console.log('Settings fetched:', data); // Debug log
         setSettings(data);
+      } else {
+        console.error('Failed to fetch settings:', response.status, response.statusText);
       }
     } catch (error) {
       console.error('Error fetching settings:', error);
@@ -142,8 +150,22 @@ const CreateOrder: React.FC = () => {
     }
   };
 
-  const estimasiHarga = parseFloat(formData.berat_gabah_kg) * settings.harga_per_kg || 0;
-  const estimasiKonsumsi = parseFloat(formData.berat_gabah_kg) * settings.konsumsi_bbm_per_kg || 0;
+  // Kalkulasi estimasi harga dan konsumsi BBM
+  const estimasiHarga = useMemo(() => {
+    const berat = parseFloat(formData.berat_gabah_kg) || 0;
+    const hargaPerKg = settings.harga_per_kg || 0;
+    const result = berat * hargaPerKg;
+    console.log('Estimasi harga calculation:', { berat, hargaPerKg, result }); // Debug log
+    return result;
+  }, [formData.berat_gabah_kg, settings.harga_per_kg]);
+
+  const estimasiKonsumsi = useMemo(() => {
+    const berat = parseFloat(formData.berat_gabah_kg) || 0;
+    const konsumsiPerKg = settings.konsumsi_bbm_per_kg || 0;
+    const result = berat * konsumsiPerKg;
+    console.log('Estimasi konsumsi calculation:', { berat, konsumsiPerKg, result }); // Debug log
+    return result;
+  }, [formData.berat_gabah_kg, settings.konsumsi_bbm_per_kg]);
 
   return (
     <Layout>

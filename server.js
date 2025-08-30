@@ -210,11 +210,55 @@ app.post('/api/orders', authenticateToken, upload.single('bukti_foto'), async (r
       alamat_pengambilan
     } = req.body;
 
+    // Validate required fields
+    if (!nama_pelanggan || !jumlah_karung || !berat_gabah_kg || !lokasi_pengolahan || !alamat_pengambilan) {
+      return res.status(400).json({ 
+        message: 'Semua field wajib diisi: nama pelanggan, jumlah karung, berat gabah, lokasi pengolahan, dan alamat pengambilan' 
+      });
+    }
+
     if (!req.file) {
       return res.status(400).json({ message: 'Bukti foto harus diunggah' });
     }
 
+    // Get user's machine assignment
+    const [userRows] = await db.execute(
+      'SELECT id_mesin_ditugaskan FROM pengguna WHERE id = ?',
+      [req.user.id]
+    );
+
+    if (userRows.length === 0) {
+      return res.status(404).json({ message: 'User tidak ditemukan' });
+    }
+
+    const id_mesin_ditugaskan = userRows[0].id_mesin_ditugaskan;
+
+    // Validate machine assignment
+    if (!id_mesin_ditugaskan) {
+      return res.status(400).json({ message: 'Anda belum ditugaskan ke mesin manapun. Hubungi admin untuk assignment mesin.' });
+    }
+
     const url_bukti_foto = `/uploads/${req.file.filename}`;
+
+    // Prepare parameters with proper validation
+    const params = [
+      nama_pelanggan,
+      kontak_pelanggan || null,
+      nama_karnet || null,
+      parseInt(jumlah_karung) || 0,
+      parseFloat(berat_gabah_kg) || 0,
+      url_bukti_foto,
+      lokasi_pengolahan,
+      catatan || null,
+      alamat_pengambilan,
+      req.user.id,
+      id_mesin_ditugaskan
+    ];
+
+    // Check for undefined values
+    if (params.some(param => param === undefined)) {
+      return res.status(400).json({ message: 'Data tidak lengkap atau tidak valid' });
+    }
 
     const [result] = await db.execute(
       `INSERT INTO pesanan (
@@ -222,19 +266,7 @@ app.post('/api/orders', authenticateToken, upload.single('bukti_foto'), async (r
         berat_gabah_kg, url_bukti_foto, lokasi_pengolahan, catatan, 
         alamat_pengambilan, id_operator, id_mesin
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        nama_pelanggan,
-        kontak_pelanggan || null,
-        nama_karnet || null,
-        parseInt(jumlah_karung),
-        parseFloat(berat_gabah_kg),
-        url_bukti_foto,
-        lokasi_pengolahan,
-        catatan || null,
-        alamat_pengambilan,
-        req.user.id,
-        req.user.id_mesin_ditugaskan
-      ]
+      params
     );
 
     res.status(201).json({ 
@@ -593,8 +625,9 @@ app.delete('/api/machines/:id', authenticateToken, requireAdmin, async (req, res
   }
 });
 
-// SETTINGS ROUTES (Admin only)
-app.get('/api/settings', authenticateToken, requireAdmin, async (req, res) => {
+// SETTINGS ROUTES
+// Get settings (accessible by all authenticated users for calculations)
+app.get('/api/settings', authenticateToken, async (req, res) => {
   try {
     const [rows] = await db.execute('SELECT kunci_pengaturan, nilai_pengaturan FROM pengaturan');
     const settings = {};
@@ -608,6 +641,7 @@ app.get('/api/settings', authenticateToken, requireAdmin, async (req, res) => {
   }
 });
 
+// Update settings (Admin only)
 app.put('/api/settings/:key', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { key } = req.params;
