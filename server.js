@@ -19,7 +19,7 @@ const JWT_SECRET = 'your-secret-key-change-in-production';
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads-pabrik-beras', express.static('uploads-pabrik-beras'));
 
 // Database connection
 const dbConfig = {
@@ -43,7 +43,7 @@ async function initDB() {
 // File upload configuration
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+    cb(null, 'uploads-pabrik-beras/');
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -53,7 +53,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ 
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
@@ -70,7 +69,6 @@ const upload = multer({
 // Multiple file upload configuration
 const uploadMultiple = multer({ 
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit per file
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
@@ -293,7 +291,7 @@ app.post('/api/orders', authenticateToken, (req, res) => {
 
       // Insert photo evidence
       for (const file of req.files) {
-        const url_bukti_foto = `/uploads/${file.filename}`;
+        const url_bukti_foto = `/uploads-pabrik-beras/${file.filename}`;
         await db.execute(
           `INSERT INTO bukti_foto (
             id_pesanan, url_bukti_foto, nama_file, ukuran_file, tipe_file
@@ -819,8 +817,8 @@ app.get('/api/operators', authenticateToken, requireAdmin, async (req, res) => {
 });
 
 // Create uploads directory
-if (!fs.existsSync('uploads')) {
-  fs.mkdirSync('uploads');
+if (!fs.existsSync('uploads-pabrik-beras')) {
+  fs.mkdirSync('uploads-pabrik-beras');
 }
 
 // Initialize database connection

@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS pengaturan (
 );
 
 -- Migration section: Handle legacy data if exists
--- Check if pesanan table has old url_bukti_foto column
+-- Check if pesanan table has old url_bukti_foto column and remove it if exists
 SET @has_old_column = (
   SELECT COUNT(*) 
   FROM INFORMATION_SCHEMA.COLUMNS 
@@ -76,33 +76,11 @@ SET @has_old_column = (
     AND COLUMN_NAME = 'url_bukti_foto'
 );
 
--- If old column exists, migrate the data
-SET @migration_sql = IF(@has_old_column > 0, 
-  '-- Backup existing photo data
-  CREATE TEMPORARY TABLE temp_photos AS
-  SELECT id, url_bukti_foto FROM pesanan WHERE url_bukti_foto IS NOT NULL;
-  
-  -- Remove url_bukti_foto column from pesanan table
-  ALTER TABLE pesanan DROP COLUMN url_bukti_foto;
-  
-  -- Migrate existing photo data to new table
-  INSERT INTO bukti_foto (id_pesanan, url_bukti_foto, nama_file, ukuran_file, tipe_file)
-  SELECT 
-    id as id_pesanan,
-    url_bukti_foto,
-    CONCAT('bukti_', id, '.jpg') as nama_file,
-    0 as ukuran_file,
-    'image/jpeg' as tipe_file
-  FROM temp_photos;
-  
-  -- Drop temporary table
-  DROP TEMPORARY TABLE temp_photos;',
-  'SELECT \'No migration needed - database is already up to date\' as status;'
-);
-
-PREPARE migration_stmt FROM @migration_sql;
-EXECUTE migration_stmt;
-DEALLOCATE PREPARE migration_stmt;
+-- If old column exists, remove it (data will be lost, but this is for new installations)
+SET @sql = IF(@has_old_column > 0, 'ALTER TABLE pesanan DROP COLUMN url_bukti_foto', 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 -- Insert default data
 
