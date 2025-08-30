@@ -1,10 +1,16 @@
-const express = require('express');
-const mysql = require('mysql2/promise');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const cors = require('cors');
-const multer = require('multer');
-const path = require('path');
+import express from 'express';
+import mysql from 'mysql2/promise';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import cors from 'cors';
+import multer from 'multer';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import fs from 'fs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = 5000;
@@ -21,7 +27,7 @@ const dbConfig = {
   user: 'root', 
   password: '',
   database: 'pabrik_beras'
-};
+}
 
 let db;
 
@@ -98,11 +104,13 @@ app.post('/api/auth/login', async (req, res) => {
       [nama_pengguna]
     );
 
+
     if (rows.length === 0) {
       return res.status(401).json({ message: 'Username atau password salah' });
     }
 
     const user = rows[0];
+    console.log(user.kata_sandi, kata_sandi);
     const validPassword = await bcrypt.compare(kata_sandi, user.kata_sandi);
 
     if (!validPassword) {
@@ -113,28 +121,44 @@ app.post('/api/auth/login', async (req, res) => {
       { 
         id: user.id, 
         nama_pengguna: user.nama_pengguna, 
-        peran: user.peran,
-        nama_lengkap: user.nama_lengkap,
-        id_mesin_ditugaskan: user.id_mesin_ditugaskan,
-        kode_mesin: user.kode_mesin
+        peran: user.peran
       },
       JWT_SECRET,
       { expiresIn: '24h' }
     );
 
-    res.json({
-      token,
-      user: {
-        id: user.id,
-        nama_pengguna: user.nama_pengguna,
-        nama_lengkap: user.nama_lengkap,
-        peran: user.peran,
-        id_mesin_ditugaskan: user.id_mesin_ditugaskan,
-        kode_mesin: user.kode_mesin
-      }
-    });
+    res.json({ token });
   } catch (error) {
     console.error('Login error:', error);
+    res.status(500).json({ message: 'Terjadi kesalahan server' });
+  }
+});
+
+app.get('/api/auth/me', authenticateToken, async (req, res) => {
+  try {
+    const [rows] = await db.execute(
+      `SELECT p.*, m.kode_mesin 
+       FROM pengguna p 
+       LEFT JOIN mesin m ON p.id_mesin_ditugaskan = m.id 
+       WHERE p.id = ?`,
+      [req.user.id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'User tidak ditemukan' });
+    }
+
+    const user = rows[0];
+    res.json({
+      id: user.id,
+      nama_pengguna: user.nama_pengguna,
+      nama_lengkap: user.nama_lengkap,
+      peran: user.peran,
+      id_mesin_ditugaskan: user.id_mesin_ditugaskan,
+      kode_mesin: user.kode_mesin
+    });
+  } catch (error) {
+    console.error('Get user detail error:', error);
     res.status(500).json({ message: 'Terjadi kesalahan server' });
   }
 });
@@ -715,7 +739,6 @@ app.get('/api/operators', authenticateToken, requireAdmin, async (req, res) => {
 });
 
 // Create uploads directory
-const fs = require('fs');
 if (!fs.existsSync('uploads')) {
   fs.mkdirSync('uploads');
 }

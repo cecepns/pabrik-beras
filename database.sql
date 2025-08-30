@@ -1,5 +1,8 @@
 -- Database schema for Rice Mill Management System
+-- File: database.sql
+-- Description: SQL file untuk setup database pabrik beras
 
+-- Create database
 CREATE DATABASE IF NOT EXISTS pabrik_beras;
 USE pabrik_beras;
 
@@ -62,11 +65,11 @@ INSERT IGNORE INTO mesin (kode_mesin) VALUES
 
 -- Insert default admin user (password: admin123)
 INSERT IGNORE INTO pengguna (nama_pengguna, kata_sandi, nama_lengkap, peran) VALUES 
-('admin', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewcBw4h9kUIp5KBG', 'Administrator', 'admin');
+('admin', '$2b$10$q1jNYWzUOm/6QhKt9YfEdO2dLIB3PU35L2KspL9V73HZ/jhrYczVS', 'Administrator', 'admin');
 
 -- Insert default operator (password: operator123)
 INSERT IGNORE INTO pengguna (nama_pengguna, kata_sandi, nama_lengkap, peran, id_mesin_ditugaskan) VALUES 
-('operator1', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewcBw4h9kUIp5KBG', 'Operator 1', 'operator', 1);
+('operator1', '$2b$10$TNetxZZEZdxVGW5sJX8Mp.AqjfxvtBvG.g7xFxErERV0UTA51sgCm', 'Operator 1', 'operator', 1);
 
 -- Insert default settings
 INSERT IGNORE INTO pengaturan (kunci_pengaturan, nilai_pengaturan) VALUES 
@@ -77,3 +80,16 @@ INSERT IGNORE INTO pengaturan (kunci_pengaturan, nilai_pengaturan) VALUES
 CREATE INDEX idx_pesanan_operator ON pesanan(id_operator);
 CREATE INDEX idx_pesanan_tanggal ON pesanan(dibuat_pada);
 CREATE INDEX idx_pesanan_pelanggan ON pesanan(nama_pelanggan);
+
+-- Show tables for verification
+SHOW TABLES;
+
+-- Show sample data
+SELECT 'Mesin:' as info;
+SELECT * FROM mesin;
+
+SELECT 'Pengguna:' as info;
+SELECT id, nama_pengguna, nama_lengkap, peran FROM pengguna;
+
+SELECT 'Pengaturan:' as info;
+SELECT * FROM pengaturan;
