@@ -4,6 +4,16 @@ import Layout from '../Layout';
 import { ArrowLeft, User, Phone, FileText, Package, Scale, MapPin, Camera, Calendar, Cog } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+interface Photo {
+  id: number;
+  id_pesanan: number;
+  url_bukti_foto: string;
+  nama_file: string;
+  ukuran_file: number;
+  tipe_file: string;
+  dibuat_pada: string;
+}
+
 interface OrderDetail {
   id: number;
   nama_pelanggan: string;
@@ -11,7 +21,6 @@ interface OrderDetail {
   nama_karnet?: string;
   jumlah_karung: number;
   berat_gabah_kg: number;
-  url_bukti_foto: string;
   lokasi_pengolahan: string;
   catatan?: string;
   alamat_pengambilan: string;
@@ -21,6 +30,7 @@ interface OrderDetail {
   kode_mesin: string;
   estimasi_harga: number;
   estimasi_konsumsi_bbm: number;
+  photos: Photo[];
 }
 
 const OrderDetail: React.FC = () => {
@@ -230,18 +240,32 @@ const OrderDetail: React.FC = () => {
           <div className="bg-white rounded-xl shadow-sm border p-6">
             <div className="flex items-center space-x-2 mb-4">
               <Camera className="w-5 h-5 text-gray-500" />
-              <h2 className="text-lg font-semibold text-gray-900">Bukti Foto</h2>
+              <h2 className="text-lg font-semibold text-gray-900">Bukti Foto ({order.photos?.length || 0})</h2>
             </div>
-            <div className="text-center">
-              <img
-                src={`http://localhost:5000${order.url_bukti_foto}`}
-                alt="Bukti foto gabah"
-                className="max-w-full h-auto rounded-lg shadow-sm border mx-auto"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300?text=Foto+Tidak+Tersedia';
-                }}
-              />
-            </div>
+            {order.photos && order.photos.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {order.photos.map((photo, index) => (
+                  <div key={photo.id} className="relative group">
+                    <img
+                      src={`http://localhost:5000${photo.url_bukti_foto}`}
+                      alt={`Bukti foto ${index + 1}`}
+                      className="w-full h-48 object-cover rounded-lg shadow-sm border cursor-pointer hover:shadow-md transition-shadow"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300?text=Foto+Tidak+Tersedia';
+                      }}
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2 rounded-b-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                      <p className="text-xs truncate">{photo.nama_file}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Camera className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+                <p className="text-gray-500">Tidak ada foto bukti</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

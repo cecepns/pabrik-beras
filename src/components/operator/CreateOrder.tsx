@@ -18,7 +18,7 @@ const CreateOrder: React.FC = () => {
     nama_karnet: '',
     jumlah_karung: '',
     berat_gabah_kg: '',
-    bukti_foto: null as File | null,
+    bukti_foto: [] as File[],
     lokasi_pengolahan: '',
     catatan: '',
     alamat_pengambilan: ''
@@ -106,10 +106,11 @@ const CreateOrder: React.FC = () => {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
+    if (e.target.files && e.target.files.length > 0) {
+      const files = Array.from(e.target.files);
       setFormData(prev => ({
         ...prev,
-        bukti_foto: e.target.files![0]
+        bukti_foto: files
       }));
     }
   };
@@ -120,8 +121,15 @@ const CreateOrder: React.FC = () => {
 
     const submitData = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
-      if (value !== null) {
-        submitData.append(key, value as string | File);
+      if (key === 'bukti_foto') {
+        // Handle multiple files
+        if (Array.isArray(value) && value.length > 0) {
+          value.forEach((file: File) => {
+            submitData.append('bukti_foto', file);
+          });
+        }
+      } else if (value !== null && value !== '') {
+        submitData.append(key, value as string);
       }
     });
 
@@ -307,7 +315,7 @@ const CreateOrder: React.FC = () => {
                       Upload foto bukti gabah
                     </span>
                     <span className="mt-1 block text-sm text-gray-600">
-                      PNG, JPG, JPEG hingga 5MB
+                      PNG, JPG, JPEG hingga 5MB (maksimal 10 foto)
                     </span>
                   </label>
                   <input
@@ -316,14 +324,22 @@ const CreateOrder: React.FC = () => {
                     type="file"
                     className="sr-only"
                     accept="image/jpeg,image/jpg,image/png"
+                    multiple
                     onChange={handleFileChange}
                     required
                   />
                 </div>
-                {formData.bukti_foto && (
-                  <p className="mt-2 text-sm text-green-600">
-                    File terpilih: {formData.bukti_foto.name}
-                  </p>
+                {formData.bukti_foto.length > 0 && (
+                  <div className="mt-2">
+                    <p className="text-sm text-green-600 font-medium">
+                      {formData.bukti_foto.length} file terpilih:
+                    </p>
+                    <ul className="mt-1 text-sm text-gray-600">
+                      {formData.bukti_foto.map((file, index) => (
+                        <li key={index}>• {file.name}</li>
+                      ))}
+                    </ul>
+                  </div>
                 )}
               </div>
             </div>

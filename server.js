@@ -67,6 +67,23 @@ const upload = multer({
   }
 });
 
+// Multiple file upload configuration
+const uploadMultiple = multer({ 
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit per file
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+    
+    if (mimetype && extname) {
+      return cb(null, true);
+    } else {
+      cb(new Error('Hanya file gambar yang diizinkan (JPG, JPEG, PNG)'));
+    }
+  }
+}).array('bukti_foto', 10); // Allow up to 10 images
+
 // Authentication middleware
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
@@ -197,86 +214,104 @@ app.post('/api/auth/change-password', authenticateToken, async (req, res) => {
 });
 
 // ORDER ROUTES
-app.post('/api/orders', authenticateToken, upload.single('bukti_foto'), async (req, res) => {
-  try {
-    const {
-      nama_pelanggan,
-      kontak_pelanggan,
-      nama_karnet,
-      jumlah_karung,
-      berat_gabah_kg,
-      lokasi_pengolahan,
-      catatan,
-      alamat_pengambilan
-    } = req.body;
+app.post('/api/orders', authenticateToken, (req, res) => {
+  uploadMultiple(req, res, async (err) => {
+    try {
+      if (err) {
+        return res.status(400).json({ message: err.message });
+      }
 
-    // Validate required fields
-    if (!nama_pelanggan || !jumlah_karung || !berat_gabah_kg || !lokasi_pengolahan || !alamat_pengambilan) {
-      return res.status(400).json({ 
-        message: 'Semua field wajib diisi: nama pelanggan, jumlah karung, berat gabah, lokasi pengolahan, dan alamat pengambilan' 
+      const {
+        nama_pelanggan,
+        kontak_pelanggan,
+        nama_karnet,
+        jumlah_karung,
+        berat_gabah_kg,
+        lokasi_pengolahan,
+        catatan,
+        alamat_pengambilan
+      } = req.body;
+
+      // Validate required fields
+      if (!nama_pelanggan || !jumlah_karung || !berat_gabah_kg || !lokasi_pengolahan || !alamat_pengambilan) {
+        return res.status(400).json({ 
+          message: 'Semua field wajib diisi: nama pelanggan, jumlah karung, berat gabah, lokasi pengolahan, dan alamat pengambilan' 
+        });
+      }
+
+      if (!req.files || req.files.length === 0) {
+        return res.status(400).json({ message: 'Minimal satu bukti foto harus diunggah' });
+      }
+
+      // Get user's machine assignment
+      const [userRows] = await db.execute(
+        'SELECT id_mesin_ditugaskan FROM pengguna WHERE id = ?',
+        [req.user.id]
+      );
+
+      if (userRows.length === 0) {
+        return res.status(404).json({ message: 'User tidak ditemukan' });
+      }
+
+      const id_mesin_ditugaskan = userRows[0].id_mesin_ditugaskan;
+
+      // Validate machine assignment
+      if (!id_mesin_ditugaskan) {
+        return res.status(400).json({ message: 'Anda belum ditugaskan ke mesin manapun. Hubungi admin untuk assignment mesin.' });
+      }
+
+      // Prepare parameters for order insertion
+      const orderParams = [
+        nama_pelanggan,
+        kontak_pelanggan || null,
+        nama_karnet || null,
+        parseInt(jumlah_karung) || 0,
+        parseFloat(berat_gabah_kg) || 0,
+        lokasi_pengolahan,
+        catatan || null,
+        alamat_pengambilan,
+        req.user.id,
+        id_mesin_ditugaskan
+      ];
+
+      // Check for undefined values
+      if (orderParams.some(param => param === undefined)) {
+        return res.status(400).json({ message: 'Data tidak lengkap atau tidak valid' });
+      }
+
+      // Insert order
+      const [result] = await db.execute(
+        `INSERT INTO pesanan (
+          nama_pelanggan, kontak_pelanggan, nama_karnet, jumlah_karung, 
+          berat_gabah_kg, lokasi_pengolahan, catatan, 
+          alamat_pengambilan, id_operator, id_mesin
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        orderParams
+      );
+
+      const orderId = result.insertId;
+
+      // Insert photo evidence
+      for (const file of req.files) {
+        const url_bukti_foto = `/uploads/${file.filename}`;
+        await db.execute(
+          `INSERT INTO bukti_foto (
+            id_pesanan, url_bukti_foto, nama_file, ukuran_file, tipe_file
+          ) VALUES (?, ?, ?, ?, ?)`,
+          [orderId, url_bukti_foto, file.originalname, file.size, file.mimetype]
+        );
+      }
+
+      res.status(201).json({ 
+        id: orderId,
+        message: 'Order berhasil dibuat',
+        uploadedFiles: req.files.length
       });
+    } catch (error) {
+      console.error('Create order error:', error);
+      res.status(500).json({ message: 'Terjadi kesalahan server' });
     }
-
-    if (!req.file) {
-      return res.status(400).json({ message: 'Bukti foto harus diunggah' });
-    }
-
-    // Get user's machine assignment
-    const [userRows] = await db.execute(
-      'SELECT id_mesin_ditugaskan FROM pengguna WHERE id = ?',
-      [req.user.id]
-    );
-
-    if (userRows.length === 0) {
-      return res.status(404).json({ message: 'User tidak ditemukan' });
-    }
-
-    const id_mesin_ditugaskan = userRows[0].id_mesin_ditugaskan;
-
-    // Validate machine assignment
-    if (!id_mesin_ditugaskan) {
-      return res.status(400).json({ message: 'Anda belum ditugaskan ke mesin manapun. Hubungi admin untuk assignment mesin.' });
-    }
-
-    const url_bukti_foto = `/uploads/${req.file.filename}`;
-
-    // Prepare parameters with proper validation
-    const params = [
-      nama_pelanggan,
-      kontak_pelanggan || null,
-      nama_karnet || null,
-      parseInt(jumlah_karung) || 0,
-      parseFloat(berat_gabah_kg) || 0,
-      url_bukti_foto,
-      lokasi_pengolahan,
-      catatan || null,
-      alamat_pengambilan,
-      req.user.id,
-      id_mesin_ditugaskan
-    ];
-
-    // Check for undefined values
-    if (params.some(param => param === undefined)) {
-      return res.status(400).json({ message: 'Data tidak lengkap atau tidak valid' });
-    }
-
-    const [result] = await db.execute(
-      `INSERT INTO pesanan (
-        nama_pelanggan, kontak_pelanggan, nama_karnet, jumlah_karung, 
-        berat_gabah_kg, url_bukti_foto, lokasi_pengolahan, catatan, 
-        alamat_pengambilan, id_operator, id_mesin
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      params
-    );
-
-    res.status(201).json({ 
-      id: result.insertId,
-      message: 'Order berhasil dibuat' 
-    });
-  } catch (error) {
-    console.error('Create order error:', error);
-    res.status(500).json({ message: 'Terjadi kesalahan server' });
-  }
+  });
 });
 
 app.get('/api/orders', authenticateToken, async (req, res) => {
@@ -289,10 +324,13 @@ app.get('/api/orders', authenticateToken, async (req, res) => {
       SELECT 
         p.*, 
         u.nama_lengkap as nama_operator,
-        m.kode_mesin
+        m.kode_mesin,
+        GROUP_CONCAT(bf.url_bukti_foto) as bukti_foto_urls,
+        GROUP_CONCAT(bf.nama_file) as bukti_foto_names
       FROM pesanan p
       LEFT JOIN pengguna u ON p.id_operator = u.id
       LEFT JOIN mesin m ON p.id_mesin = m.id
+      LEFT JOIN bukti_foto bf ON p.id = bf.id_pesanan
     `;
     
     let params = [];
@@ -310,7 +348,7 @@ app.get('/api/orders', authenticateToken, async (req, res) => {
       params.push(`%${search}%`, `%${search}%`);
     }
 
-    query += ' ORDER BY p.dibuat_pada DESC LIMIT ? OFFSET ?';
+    query += ' GROUP BY p.id ORDER BY p.dibuat_pada DESC LIMIT ? OFFSET ?';
     params.push(limit, offset);
 
     const [rows] = await db.execute(query, params);
@@ -389,6 +427,14 @@ app.get('/api/orders/:id', authenticateToken, async (req, res) => {
     const order = rows[0];
     order.estimasi_harga = order.berat_gabah_kg * (settingsMap['harga_per_kg'] || 0);
     order.estimasi_konsumsi_bbm = order.berat_gabah_kg * (settingsMap['konsumsi_bbm_per_kg'] || 0);
+
+    // Get all photos for this order
+    const [photos] = await db.execute(
+      'SELECT * FROM bukti_foto WHERE id_pesanan = ? ORDER BY dibuat_pada ASC',
+      [id]
+    );
+
+    order.photos = photos;
 
     res.json(order);
   } catch (error) {

@@ -35,7 +35,6 @@ CREATE TABLE IF NOT EXISTS pesanan (
   nama_karnet VARCHAR(100) NULL,
   jumlah_karung INT NOT NULL,
   berat_gabah_kg DECIMAL(10,2) NOT NULL,
-  url_bukti_foto VARCHAR(255) NOT NULL,
   lokasi_pengolahan VARCHAR(200) NOT NULL,
   catatan TEXT NULL,
   alamat_pengambilan VARCHAR(300) NOT NULL,
@@ -48,12 +47,62 @@ CREATE TABLE IF NOT EXISTS pesanan (
   FOREIGN KEY (id_mesin) REFERENCES mesin(id) ON DELETE RESTRICT
 );
 
+-- Table: bukti_foto (photo evidence)
+CREATE TABLE IF NOT EXISTS bukti_foto (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  id_pesanan INT NOT NULL,
+  url_bukti_foto VARCHAR(255) NOT NULL,
+  nama_file VARCHAR(255) NOT NULL,
+  ukuran_file INT NOT NULL,
+  tipe_file VARCHAR(50) NOT NULL,
+  dibuat_pada TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (id_pesanan) REFERENCES pesanan(id) ON DELETE CASCADE
+);
+
 -- Table: pengaturan (settings)
 CREATE TABLE IF NOT EXISTS pengaturan (
   id INT PRIMARY KEY AUTO_INCREMENT,
   kunci_pengaturan VARCHAR(50) UNIQUE NOT NULL,
   nilai_pengaturan VARCHAR(50) NOT NULL
 );
+
+-- Migration section: Handle legacy data if exists
+-- Check if pesanan table has old url_bukti_foto column
+SET @has_old_column = (
+  SELECT COUNT(*) 
+  FROM INFORMATION_SCHEMA.COLUMNS 
+  WHERE TABLE_SCHEMA = 'pabrik_beras' 
+    AND TABLE_NAME = 'pesanan' 
+    AND COLUMN_NAME = 'url_bukti_foto'
+);
+
+-- If old column exists, migrate the data
+SET @migration_sql = IF(@has_old_column > 0, 
+  '-- Backup existing photo data
+  CREATE TEMPORARY TABLE temp_photos AS
+  SELECT id, url_bukti_foto FROM pesanan WHERE url_bukti_foto IS NOT NULL;
+  
+  -- Remove url_bukti_foto column from pesanan table
+  ALTER TABLE pesanan DROP COLUMN url_bukti_foto;
+  
+  -- Migrate existing photo data to new table
+  INSERT INTO bukti_foto (id_pesanan, url_bukti_foto, nama_file, ukuran_file, tipe_file)
+  SELECT 
+    id as id_pesanan,
+    url_bukti_foto,
+    CONCAT('bukti_', id, '.jpg') as nama_file,
+    0 as ukuran_file,
+    'image/jpeg' as tipe_file
+  FROM temp_photos;
+  
+  -- Drop temporary table
+  DROP TEMPORARY TABLE temp_photos;',
+  'SELECT \'No migration needed - database is already up to date\' as status;'
+);
+
+PREPARE migration_stmt FROM @migration_sql;
+EXECUTE migration_stmt;
+DEALLOCATE PREPARE migration_stmt;
 
 -- Insert default data
 
@@ -77,9 +126,10 @@ INSERT IGNORE INTO pengaturan (kunci_pengaturan, nilai_pengaturan) VALUES
 ('konsumsi_bbm_per_kg', '0.1');
 
 -- Create indexes for better performance
-CREATE INDEX idx_pesanan_operator ON pesanan(id_operator);
-CREATE INDEX idx_pesanan_tanggal ON pesanan(dibuat_pada);
-CREATE INDEX idx_pesanan_pelanggan ON pesanan(nama_pelanggan);
+CREATE INDEX IF NOT EXISTS idx_pesanan_operator ON pesanan(id_operator);
+CREATE INDEX IF NOT EXISTS idx_pesanan_tanggal ON pesanan(dibuat_pada);
+CREATE INDEX IF NOT EXISTS idx_pesanan_pelanggan ON pesanan(nama_pelanggan);
+CREATE INDEX IF NOT EXISTS idx_bukti_foto_pesanan ON bukti_foto(id_pesanan);
 
 -- Show tables for verification
 SHOW TABLES;
@@ -93,3 +143,9 @@ SELECT id, nama_pengguna, nama_lengkap, peran FROM pengguna;
 
 SELECT 'Pengaturan:' as info;
 SELECT * FROM pengaturan;
+
+SELECT 'Pesanan:' as info;
+SELECT id, nama_pelanggan, dibuat_pada FROM pesanan LIMIT 5;
+
+SELECT 'Bukti Foto:' as info;
+SELECT * FROM bukti_foto LIMIT 5;
