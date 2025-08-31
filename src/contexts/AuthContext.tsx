@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import toast from 'react-hot-toast';
+import { getApiUrl, API_CONFIG } from '../config/api';
 
 interface User {
   id: number;
@@ -32,7 +33,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return;
       }
 
-      const response = await fetch('http://localhost:5000/api/auth/me', {
+      const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.ME), {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -64,7 +65,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const login = async (nama_pengguna: string, kata_sandi: string): Promise<boolean> => {
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.LOGIN), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

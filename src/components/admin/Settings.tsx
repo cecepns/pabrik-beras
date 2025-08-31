@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Layout from '../Layout';
 import toast from 'react-hot-toast';
 import { DollarSign, Fuel, Save } from 'lucide-react';
+import { getApiUrl, API_CONFIG } from '../../config/api';
 
 interface Settings {
   harga_per_kg: number | string;
@@ -23,7 +24,7 @@ const Settings: React.FC = () => {
   const fetchSettings = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/settings', {
+      const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.SETTINGS), {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -42,7 +43,7 @@ const Settings: React.FC = () => {
     setSaving(key);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/settings/${key}`, {
+      const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.SETTING_UPDATE(key)), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

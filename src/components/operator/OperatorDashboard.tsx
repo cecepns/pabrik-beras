@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Layout from '../Layout';
 import LocationStatus from '../LocationStatus';
 import { Plus, Search, Eye } from 'lucide-react';
+import { getApiUrlWithParams, API_CONFIG } from '../../config/api';
 
 interface Order {
   id: number;
@@ -41,7 +42,10 @@ const OperatorDashboard: React.FC = () => {
         ...(search && { search })
       });
 
-      const response = await fetch(`http://localhost:5000/api/orders?${params}`, {
+      const response = await fetch(getApiUrlWithParams(API_CONFIG.ENDPOINTS.ORDERS, {
+        page: currentPage.toString(),
+        ...(search && { search })
+      }), {
         headers: {
           'Authorization': `Bearer ${token}`
         }

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Layout from './Layout';
 import { ArrowLeft, User, Phone, FileText, Package, Scale, MapPin, Camera, Calendar, Cog } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { getApiUrl, API_CONFIG } from '../config/api';
 
 interface Photo {
   id: number;
@@ -51,7 +52,7 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ isAdmin = false }) => {
   const fetchOrderDetail = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/orders/${id}`, {
+      const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.ORDER_DETAIL(id!)), {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -247,7 +248,7 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ isAdmin = false }) => {
                 {order.photos.map((photo, index) => (
                   <div key={photo.id} className="relative group">
                     <img
-                      src={`http://localhost:5000${photo.url_bukti_foto}`}
+                      src={`${API_CONFIG.BASE_URL}${photo.url_bukti_foto}`}
                       alt={`Bukti foto ${index + 1}`}
                       className="w-full h-32 sm:h-40 lg:h-48 object-cover rounded-lg shadow-sm border cursor-pointer hover:shadow-md transition-shadow"
                       onError={(e) => {

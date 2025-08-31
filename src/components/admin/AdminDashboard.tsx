@@ -8,6 +8,7 @@ import {
   Scale, 
   Clock
 } from 'lucide-react';
+import { getApiUrl, API_CONFIG } from '../../config/api';
 
 interface DashboardStats {
   todayOrders: number;
@@ -36,7 +37,7 @@ const AdminDashboard: React.FC = () => {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/dashboard/stats', {
+      const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.DASHBOARD_STATS), {
         headers: {
           'Authorization': `Bearer ${token}`
         }

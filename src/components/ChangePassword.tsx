@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Layout from './Layout';
 import { Lock, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { getApiUrl, API_CONFIG } from '../config/api';
 
 const ChangePassword: React.FC = () => {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ const ChangePassword: React.FC = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/auth/change-password', {
+      const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.CHANGE_PASSWORD), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Layout from '../Layout';
 import toast from 'react-hot-toast';
 import { Plus, Edit, Trash2, X, Cog } from 'lucide-react';
+import { getApiUrlWithParams, getApiUrl, API_CONFIG } from '../../config/api';
 
 interface Machine {
   id: number;
@@ -28,7 +29,7 @@ const ManageMachines: React.FC = () => {
   const fetchMachines = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/machines?page=${currentPage}`, {
+      const response = await fetch(getApiUrlWithParams(API_CONFIG.ENDPOINTS.MACHINES, { page: currentPage.toString() }), {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -70,8 +71,8 @@ const ManageMachines: React.FC = () => {
     try {
       const token = localStorage.getItem('token');
       const url = editingMachine 
-        ? `http://localhost:5000/api/machines/${editingMachine.id}`
-        : 'http://localhost:5000/api/machines';
+        ? getApiUrl(API_CONFIG.ENDPOINTS.MACHINE_DETAIL(editingMachine.id))
+        : getApiUrl(API_CONFIG.ENDPOINTS.MACHINES);
       
       const method = editingMachine ? 'PUT' : 'POST';
 
@@ -105,7 +106,7 @@ const ManageMachines: React.FC = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/machines/${machineId}`, {
+      const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.MACHINE_DETAIL(machineId)), {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

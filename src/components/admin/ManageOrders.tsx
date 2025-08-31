@@ -3,6 +3,7 @@ import Layout from '../Layout';
 import { Search, Eye, Edit, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { getApiUrlWithParams, getApiUrl, API_CONFIG } from '../../config/api';
 
 interface Order {
   id: number;
@@ -42,7 +43,10 @@ const ManageOrders: React.FC = () => {
         ...(search && { search })
       });
 
-      const response = await fetch(`http://localhost:5000/api/orders?${params}`, {
+      const response = await fetch(getApiUrlWithParams(API_CONFIG.ENDPOINTS.ORDERS, {
+        page: currentPage.toString(),
+        ...(search && { search })
+      }), {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -72,7 +76,7 @@ const ManageOrders: React.FC = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+      const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.ORDER_DETAIL(orderId)), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

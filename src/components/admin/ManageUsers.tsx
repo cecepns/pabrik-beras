@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Layout from '../Layout';
 import toast from 'react-hot-toast';
 import { Plus, Edit, Trash2, RotateCcw, X, Eye, EyeOff } from 'lucide-react';
+import { getApiUrlWithParams, getApiUrl, API_CONFIG } from '../../config/api';
 
 interface User {
   id: number;
@@ -44,7 +45,7 @@ const ManageUsers: React.FC = () => {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/users?page=${currentPage}`, {
+      const response = await fetch(getApiUrlWithParams(API_CONFIG.ENDPOINTS.USERS, { page: currentPage.toString() }), {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -63,7 +64,7 @@ const ManageUsers: React.FC = () => {
   const fetchMachines = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/machines/all', {
+      const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.MACHINES_ALL), {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -110,8 +111,8 @@ const ManageUsers: React.FC = () => {
     try {
       const token = localStorage.getItem('token');
       const url = editingUser 
-        ? `http://localhost:5000/api/users/${editingUser.id}`
-        : 'http://localhost:5000/api/users';
+        ? getApiUrl(API_CONFIG.ENDPOINTS.USER_DETAIL(editingUser.id))
+        : getApiUrl(API_CONFIG.ENDPOINTS.USERS);
       
       const method = editingUser ? 'PUT' : 'POST';
 
@@ -157,7 +158,7 @@ const ManageUsers: React.FC = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
+      const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.USER_DETAIL(userId)), {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -182,7 +183,7 @@ const ManageUsers: React.FC = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/users/${userId}/reset-password`, {
+      const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.USER_RESET_PASSWORD(userId)), {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });

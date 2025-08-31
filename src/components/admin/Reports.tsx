@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Layout from '../Layout';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Calendar, FileText, Download, TrendingUp } from 'lucide-react';
+import { getApiUrlWithParams, getApiUrl, API_CONFIG } from '../../config/api';
 
 interface ReportData {
   orders: Array<{
@@ -45,7 +46,7 @@ const Reports: React.FC = () => {
   const fetchOperators = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/operators', {
+      const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.OPERATORS), {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -69,7 +70,12 @@ const Reports: React.FC = () => {
         ...(filters.operator_id && { operator_id: filters.operator_id })
       });
 
-      const response = await fetch(`http://localhost:5000/api/reports?${params}`, {
+      const response = await fetch(getApiUrlWithParams(API_CONFIG.ENDPOINTS.REPORTS, {
+        type: filters.type,
+        start_date: filters.start_date,
+        end_date: filters.end_date,
+        ...(filters.operator_id && { operator_id: filters.operator_id })
+      }), {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
