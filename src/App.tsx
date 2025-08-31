@@ -4,7 +4,6 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
 import { useAuth } from './contexts/AuthContext';
 import { LocationProvider, useLocation } from './contexts/LocationContext';
-import LocationGuard from './components/LocationGuard';
 import Login from './components/Login';
 import AdminDashboard from './components/admin/AdminDashboard';
 import OperatorDashboard from './components/operator/OperatorDashboard';
@@ -49,39 +48,42 @@ function LocationProtectedRoute({
   requireLocation?: boolean;
 }) {
   const { user } = useAuth();
-  const { setLocation } = useLocation();
+  const { setLocation, hasLocation } = useLocation();
 
   // Jika tidak memerlukan lokasi, gunakan ProtectedRoute biasa
   if (!requireLocation) {
     return <ProtectedRoute requireAdmin={requireAdmin}>{children}</ProtectedRoute>;
   }
 
-  // Jika memerlukan lokasi, wrap dengan LocationGuard
-  return (
-    <ProtectedRoute requireAdmin={requireAdmin}>
-      <LocationGuard
-        title="Akses Lokasi Diperlukan"
-        description="Untuk memberikan layanan terbaik dan estimasi yang akurat, kami memerlukan akses ke lokasi Anda. Lokasi akan digunakan untuk perhitungan estimasi dan pengiriman."
-        allowSkip={false}
-        onLocationGranted={(position) => {
-          console.log('Lokasi berhasil diperoleh:', position.coords);
-          // Simpan lokasi ke context
+  // Jika memerlukan lokasi tapi belum ada lokasi, coba dapatkan di background
+  React.useEffect(() => {
+    if (requireLocation && !hasLocation && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          console.log('Lokasi berhasil diperoleh di background:', position.coords);
           setLocation({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
             accuracy: position.coords.accuracy,
             timestamp: position.timestamp,
-            address: `Lat: ${position.coords.latitude.toFixed(6)}, Lng: ${position.coords.longitude.toFixed(6)}`
+            address: '' // Alamat akan diisi oleh LocationStatus component
           });
-        }}
-        onLocationDenied={() => {
-          console.log('Lokasi ditolak');
-        }}
-      >
-        {children}
-      </LocationGuard>
-    </ProtectedRoute>
-  );
+        },
+        (error) => {
+          console.log('Lokasi ditolak atau gagal diperoleh di background:', error.message);
+          // Tidak perlu menampilkan error, user bisa request manual melalui LocationStatus
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 60000
+        }
+      );
+    }
+  }, [requireLocation, hasLocation, setLocation]);
+
+  // Selalu render children, tidak peduli status lokasi
+  return <ProtectedRoute requireAdmin={requireAdmin}>{children}</ProtectedRoute>;
 }
 
 function AppRoutes() {
@@ -95,7 +97,7 @@ function AppRoutes() {
       />
       
       <Route path="/" element={
-        <LocationProtectedRoute requireLocation={false}>
+        <LocationProtectedRoute requireLocation={user?.peran === 'operator'}>
           {user?.peran === 'admin' ? <AdminDashboard /> : <OperatorDashboard />}
         </LocationProtectedRoute>
       } />
