@@ -83,40 +83,40 @@ const Settings: React.FC = () => {
 
   return (
     <Layout>
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Pengaturan Sistem</h1>
-          <p className="text-gray-600">Kelola parameter global sistem</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Pengaturan Sistem</h1>
+          <p className="text-sm sm:text-base text-gray-600">Kelola parameter global sistem</p>
         </div>
 
         {/* Settings Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           {/* Harga per kg */}
-          <div className="bg-white rounded-xl shadow-sm border p-6">
-            <div className="flex items-center space-x-3 mb-6">
+          <div className="bg-white rounded-xl shadow-sm border p-4 sm:p-6">
+            <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
               <div className="p-2 bg-green-100 rounded-lg">
-                <DollarSign className="w-6 h-6 text-green-600" />
+                <DollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-gray-900">Harga Jasa Giling</h2>
-                <p className="text-sm text-gray-600">Biaya per kilogram gabah</p>
+                <h2 className="text-base sm:text-lg font-semibold text-gray-900">Harga Jasa Giling</h2>
+                <p className="text-xs sm:text-sm text-gray-600">Biaya per kilogram gabah</p>
               </div>
             </div>
 
             <form onSubmit={handleSubmit('harga_per_kg')}>
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Harga per Kg (Rupiah)
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">Rp</span>
+                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm sm:text-base">Rp</span>
                     <input
                       type="number"
                       value={settings.harga_per_kg}
                       onChange={(e) => setSettings(prev => ({ ...prev, harga_per_kg: e.target.value }))}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                      className="w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm sm:text-base"
                       placeholder="0"
                       required
                     />
@@ -126,7 +126,7 @@ const Settings: React.FC = () => {
                 <button
                   type="submit"
                   disabled={saving === 'harga_per_kg'}
-                  className="w-full flex items-center justify-center space-x-2 bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full flex items-center justify-center space-x-2 bg-green-500 text-white py-2.5 sm:py-3 rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                 >
                   <Save className="w-4 h-4" />
                   <span>{saving === 'harga_per_kg' ? 'Menyimpan...' : 'Simpan Harga'}</span>
@@ -136,30 +136,30 @@ const Settings: React.FC = () => {
           </div>
 
           {/* Konsumsi BBM */}
-          <div className="bg-white rounded-xl shadow-sm border p-6">
-            <div className="flex items-center space-x-3 mb-6">
+          <div className="bg-white rounded-xl shadow-sm border p-4 sm:p-6">
+            <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
               <div className="p-2 bg-blue-100 rounded-lg">
-                <Fuel className="w-6 h-6 text-blue-600" />
+                <Fuel className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-gray-900">Konsumsi BBM</h2>
-                <p className="text-sm text-gray-600">Liter per kilogram gabah</p>
+                <h2 className="text-base sm:text-lg font-semibold text-gray-900">Konsumsi BBM</h2>
+                <p className="text-xs sm:text-sm text-gray-600">Liter per kilogram gabah</p>
               </div>
             </div>
 
             <form onSubmit={handleSubmit('konsumsi_bbm_per_kg')}>
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     BBM per Kg (Liter)
                   </label>
                   <div className="relative">
-                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">L</span>
+                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm sm:text-base">L</span>
                     <input
                       type="number"
                       value={settings.konsumsi_bbm_per_kg}
                       onChange={(e) => setSettings(prev => ({ ...prev, konsumsi_bbm_per_kg: e.target.value }))}
-                      className="w-full px-4 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                      className="w-full px-3 sm:px-4 pr-8 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base"
                       placeholder="0.1"
                       required
                     />
@@ -169,7 +169,7 @@ const Settings: React.FC = () => {
                 <button
                   type="submit"
                   disabled={saving === 'konsumsi_bbm_per_kg'}
-                  className="w-full flex items-center justify-center space-x-2 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full flex items-center justify-center space-x-2 bg-blue-500 text-white py-2.5 sm:py-3 rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                 >
                   <Save className="w-4 h-4" />
                   <span>{saving === 'konsumsi_bbm_per_kg' ? 'Menyimpan...' : 'Simpan BBM'}</span>
@@ -180,9 +180,9 @@ const Settings: React.FC = () => {
         </div>
 
         {/* Information */}
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-          <h3 className="font-medium text-blue-900 mb-2">Informasi Penting</h3>
-          <ul className="text-sm text-blue-800 space-y-1">
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 sm:p-6">
+          <h3 className="font-medium text-blue-900 mb-2 text-sm sm:text-base">Informasi Penting</h3>
+          <ul className="text-xs sm:text-sm text-blue-800 space-y-1">
             <li>• Perubahan pengaturan akan langsung berlaku untuk order baru</li>
             <li>• Order yang sudah ada tidak akan terpengaruh oleh perubahan ini</li>
             <li>• Pastikan nilai yang dimasukkan sudah tepat sebelum menyimpan</li>

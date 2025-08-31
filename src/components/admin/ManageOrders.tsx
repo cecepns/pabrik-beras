@@ -67,29 +67,29 @@ const ManageOrders: React.FC = () => {
 
   return (
     <Layout>
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Manajemen Order</h1>
-          <p className="text-gray-600">Kelola semua order dari seluruh operator</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Manajemen Order</h1>
+          <p className="text-sm sm:text-base text-gray-600">Kelola semua order dari seluruh operator</p>
         </div>
 
         {/* Search */}
-        <div className="bg-white rounded-xl shadow-sm border p-6">
+        <div className="bg-white rounded-xl shadow-sm border p-4 sm:p-6">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
             <input
               type="text"
               placeholder="Cari berdasarkan nama pelanggan atau karnet..."
               value={search}
               onChange={(e) => handleSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+              className="w-full pl-9 sm:pl-10 pr-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm sm:text-base"
             />
           </div>
         </div>
 
-        {/* Orders Table */}
-        <div className="bg-white rounded-xl shadow-sm border">
+        {/* Orders Table - Desktop */}
+        <div className="hidden lg:block bg-white rounded-xl shadow-sm border">
           {loading ? (
             <div className="flex items-center justify-center h-64">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
@@ -100,58 +100,58 @@ const ManageOrders: React.FC = () => {
                 <table className="w-full">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pelanggan</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Karnet</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Berat (kg)</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Karung</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Operator</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mesin</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pelanggan</th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Karnet</th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Berat (kg)</th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Karung</th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Operator</th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mesin</th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
                     {orders.length === 0 ? (
                       <tr>
-                        <td colSpan={10} className="px-6 py-8 text-center text-gray-500">
+                        <td colSpan={10} className="px-4 sm:px-6 py-8 text-center text-gray-500">
                           {search ? 'Tidak ada order yang cocok dengan pencarian' : 'Belum ada order'}
                         </td>
                       </tr>
                     ) : (
                       orders.map((order) => (
                         <tr key={order.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             #{order.id}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="font-medium text-gray-900">{order.nama_pelanggan}</div>
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                            <div className="font-medium text-gray-900 text-sm sm:text-base">{order.nama_pelanggan}</div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                             {order.nama_karnet || '-'}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                             {order.berat_gabah_kg.toLocaleString()}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                             {order.jumlah_karung}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                             {order.nama_operator}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                             {order.kode_mesin}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                             <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
                               {order.status}
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                             {new Date(order.dibuat_pada).toLocaleDateString('id-ID')}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                             <Link
                               to={`/admin/orders/${order.id}`}
                               className="inline-flex items-center space-x-1 text-green-600 hover:text-green-800"
@@ -166,34 +166,100 @@ const ManageOrders: React.FC = () => {
                   </tbody>
                 </table>
               </div>
-
-              {/* Pagination */}
-              {pagination && pagination.totalPages > 1 && (
-                <div className="px-6 py-4 border-t border-gray-200 flex justify-between items-center">
-                  <div className="text-sm text-gray-600">
-                    Menampilkan {((pagination.currentPage - 1) * 10) + 1}-{Math.min(pagination.currentPage * 10, pagination.totalItems)} dari {pagination.totalItems} data
-                  </div>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => setCurrentPage(prev => prev - 1)}
-                      disabled={!pagination.hasPrev}
-                      className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      Sebelumnya
-                    </button>
-                    <button
-                      onClick={() => setCurrentPage(prev => prev + 1)}
-                      disabled={!pagination.hasNext}
-                      className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      Selanjutnya
-                    </button>
-                  </div>
-                </div>
-              )}
             </>
           )}
         </div>
+
+        {/* Orders Cards - Mobile/Tablet */}
+        <div className="lg:hidden space-y-3">
+          {loading ? (
+            <div className="bg-white rounded-xl shadow-sm border p-6">
+              <div className="flex items-center justify-center h-32">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-500"></div>
+              </div>
+            </div>
+          ) : orders.length === 0 ? (
+            <div className="bg-white rounded-xl shadow-sm border p-6 text-center text-gray-500">
+              {search ? 'Tidak ada order yang cocok dengan pencarian' : 'Belum ada order'}
+            </div>
+          ) : (
+            orders.map((order) => (
+              <div key={order.id} className="bg-white rounded-xl shadow-sm border p-4">
+                <div className="flex justify-between items-start mb-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <span className="text-sm font-medium text-gray-900">#{order.id}</span>
+                      <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                        {order.status}
+                      </span>
+                    </div>
+                    <h3 className="font-medium text-gray-900 text-sm sm:text-base truncate">{order.nama_pelanggan}</h3>
+                    {order.nama_karnet && (
+                      <p className="text-xs text-gray-600 mt-1">Karnet: {order.nama_karnet}</p>
+                    )}
+                  </div>
+                  <Link
+                    to={`/admin/orders/${order.id}`}
+                    className="inline-flex items-center space-x-1 text-green-600 hover:text-green-800 text-sm"
+                  >
+                    <Eye className="w-4 h-4" />
+                    <span>Detail</span>
+                  </Link>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <p className="text-gray-500 text-xs">Berat Gabah</p>
+                    <p className="font-medium text-gray-900">{order.berat_gabah_kg.toLocaleString()} kg</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 text-xs">Jumlah Karung</p>
+                    <p className="font-medium text-gray-900">{order.jumlah_karung}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 text-xs">Operator</p>
+                    <p className="font-medium text-gray-900 truncate">{order.nama_operator}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 text-xs">Mesin</p>
+                    <p className="font-medium text-gray-900">{order.kode_mesin}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-gray-500 text-xs">Tanggal Dibuat</p>
+                    <p className="font-medium text-gray-900">{new Date(order.dibuat_pada).toLocaleDateString('id-ID')}</p>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Pagination */}
+        {pagination && pagination.totalPages > 1 && (
+          <div className="bg-white rounded-xl shadow-sm border p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+              <div className="text-xs sm:text-sm text-gray-600 text-center sm:text-left">
+                Menampilkan {((pagination.currentPage - 1) * 10) + 1}-{Math.min(pagination.currentPage * 10, pagination.totalItems)} dari {pagination.totalItems} data
+              </div>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => setCurrentPage(prev => prev - 1)}
+                  disabled={!pagination.hasPrev}
+                  className="px-3 py-2 text-xs sm:text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Sebelumnya
+                </button>
+                <button
+                  onClick={() => setCurrentPage(prev => prev + 1)}
+                  disabled={!pagination.hasNext}
+                  className="px-3 py-2 text-xs sm:text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Selanjutnya
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );

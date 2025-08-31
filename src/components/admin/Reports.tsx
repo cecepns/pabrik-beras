@@ -133,21 +133,21 @@ const Reports: React.FC = () => {
 
   return (
     <Layout>
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Laporan</h1>
-          <p className="text-gray-600">Analisis data operasional pabrik</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Laporan</h1>
+          <p className="text-sm sm:text-base text-gray-600">Analisis data operasional pabrik</p>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-xl shadow-sm border p-6">
-          <div className="flex items-center space-x-2 mb-4">
-            <Calendar className="w-5 h-5 text-gray-500" />
-            <h2 className="text-lg font-semibold text-gray-900">Filter Laporan</h2>
+        <div className="bg-white rounded-xl shadow-sm border p-4 sm:p-6">
+          <div className="flex items-center space-x-2 mb-3 sm:mb-4">
+            <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900">Filter Laporan</h2>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Tipe Laporan
@@ -155,7 +155,7 @@ const Reports: React.FC = () => {
               <select
                 value={filters.type}
                 onChange={(e) => handleFilterChange('type', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm sm:text-base"
               >
                 <option value="harian">Harian</option>
                 <option value="mingguan">Mingguan</option>
@@ -172,7 +172,7 @@ const Reports: React.FC = () => {
                 type="date"
                 value={filters.start_date}
                 onChange={(e) => handleFilterChange('start_date', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm sm:text-base"
               />
             </div>
 
@@ -184,7 +184,7 @@ const Reports: React.FC = () => {
                 type="date"
                 value={filters.end_date}
                 onChange={(e) => handleFilterChange('end_date', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm sm:text-base"
               />
             </div>
 
@@ -195,7 +195,7 @@ const Reports: React.FC = () => {
               <select
                 value={filters.operator_id}
                 onChange={(e) => handleFilterChange('operator_id', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm sm:text-base"
               >
                 <option value="">Semua Operator</option>
                 {operators.map((operator) => (
@@ -207,11 +207,11 @@ const Reports: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex space-x-3 mt-6">
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 mt-4 sm:mt-6">
             <button
               onClick={generateReport}
               disabled={loading}
-              className="flex items-center space-x-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50"
+              className="flex items-center justify-center space-x-2 bg-green-500 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 text-sm sm:text-base"
             >
               <TrendingUp className="w-4 h-4" />
               <span>{loading ? 'Memproses...' : 'Tampilkan'}</span>
@@ -220,7 +220,7 @@ const Reports: React.FC = () => {
             {reportData && reportData.orders.length > 0 && (
               <button
                 onClick={exportToCSV}
-                className="flex items-center space-x-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                className="flex items-center justify-center space-x-2 bg-blue-500 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm sm:text-base"
               >
                 <Download className="w-4 h-4" />
                 <span>Ekspor CSV</span>
@@ -231,39 +231,39 @@ const Reports: React.FC = () => {
 
         {/* Summary Cards */}
         {reportData && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white rounded-xl p-6 shadow-sm border">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Total Order</p>
-                  <p className="text-3xl font-bold text-gray-900">{reportData.summary.totalOrders}</p>
+                  <p className="text-xs sm:text-sm text-gray-600">Total Order</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-gray-900">{reportData.summary.totalOrders}</p>
                 </div>
-                <div className="p-3 bg-blue-100 rounded-lg">
-                  <FileText className="w-6 h-6 text-blue-600" />
+                <div className="p-2 sm:p-3 bg-blue-100 rounded-lg">
+                  <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-xl p-6 shadow-sm border">
+            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Total Berat (kg)</p>
-                  <p className="text-3xl font-bold text-gray-900">{reportData.summary.totalWeight.toLocaleString()}</p>
+                  <p className="text-xs sm:text-sm text-gray-600">Total Berat (kg)</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-gray-900">{reportData.summary.totalWeight.toLocaleString()}</p>
                 </div>
-                <div className="p-3 bg-green-100 rounded-lg">
-                  <TrendingUp className="w-6 h-6 text-green-600" />
+                <div className="p-2 sm:p-3 bg-green-100 rounded-lg">
+                  <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-xl p-6 shadow-sm border">
+            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border sm:col-span-2 lg:col-span-1">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Total Karung</p>
-                  <p className="text-3xl font-bold text-gray-900">{reportData.summary.totalKarung.toLocaleString()}</p>
+                  <p className="text-xs sm:text-sm text-gray-600">Total Karung</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-gray-900">{reportData.summary.totalKarung.toLocaleString()}</p>
                 </div>
-                <div className="p-3 bg-orange-100 rounded-lg">
-                  <FileText className="w-6 h-6 text-orange-600" />
+                <div className="p-2 sm:p-3 bg-orange-100 rounded-lg">
+                  <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600" />
                 </div>
               </div>
             </div>
@@ -272,9 +272,9 @@ const Reports: React.FC = () => {
 
         {/* Chart */}
         {reportData && reportData.orders.length > 0 && (
-          <div className="bg-white rounded-xl p-6 shadow-sm border">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Grafik Ringkasan</h2>
-            <ResponsiveContainer width="100%" height={300}>
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Grafik Ringkasan</h2>
+            <ResponsiveContainer width="100%" height={250} className="sm:h-[300px]">
               <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
@@ -287,55 +287,55 @@ const Reports: React.FC = () => {
           </div>
         )}
 
-        {/* Detailed Report Table */}
+        {/* Detailed Report Table - Desktop */}
         {reportData && (
-          <div className="bg-white rounded-xl shadow-sm border">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">Detail Order</h2>
+          <div className="hidden lg:block bg-white rounded-xl shadow-sm border">
+            <div className="p-4 sm:p-6 border-b border-gray-200">
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900">Detail Order</h2>
             </div>
             
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pelanggan</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Berat (kg)</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Karung</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Operator</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mesin</th>
+                    <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                    <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
+                    <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pelanggan</th>
+                    <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Berat (kg)</th>
+                    <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Karung</th>
+                    <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Operator</th>
+                    <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mesin</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {reportData.orders.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                      <td colSpan={7} className="px-4 sm:px-6 py-8 text-center text-gray-500">
                         Tidak ada data untuk periode yang dipilih
                       </td>
                     </tr>
                   ) : (
                     reportData.orders.map((order) => (
                       <tr key={order.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           #{order.id}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                           {new Date(order.dibuat_pada).toLocaleDateString('id-ID')}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="font-medium text-gray-900">{order.nama_pelanggan}</div>
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                          <div className="font-medium text-gray-900 text-sm sm:text-base">{order.nama_pelanggan}</div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                           {order.berat_gabah_kg.toLocaleString()}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                           {order.jumlah_karung}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                           {order.nama_operator}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                           {order.kode_mesin}
                         </td>
                       </tr>
@@ -344,6 +344,57 @@ const Reports: React.FC = () => {
                 </tbody>
               </table>
             </div>
+          </div>
+        )}
+
+        {/* Detailed Report Cards - Mobile/Tablet */}
+        {reportData && (
+          <div className="lg:hidden space-y-3">
+            {reportData.orders.length === 0 ? (
+              <div className="bg-white rounded-xl shadow-sm border p-6 text-center text-gray-500">
+                Tidak ada data untuk periode yang dipilih
+              </div>
+            ) : (
+              <>
+                <div className="bg-white rounded-xl shadow-sm border p-4">
+                  <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-3">Detail Order</h2>
+                </div>
+                {reportData.orders.map((order) => (
+                  <div key={order.id} className="bg-white rounded-xl shadow-sm border p-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <span className="text-sm font-medium text-gray-900">#{order.id}</span>
+                        </div>
+                        <h3 className="font-medium text-gray-900 text-sm sm:text-base truncate">{order.nama_pelanggan}</h3>
+                      </div>
+                      <div className="text-right text-xs sm:text-sm text-gray-500 ml-2">
+                        {new Date(order.dibuat_pada).toLocaleDateString('id-ID')}
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <p className="text-gray-500 text-xs">Berat Gabah</p>
+                        <p className="font-medium text-gray-900">{order.berat_gabah_kg.toLocaleString()} kg</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500 text-xs">Jumlah Karung</p>
+                        <p className="font-medium text-gray-900">{order.jumlah_karung}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500 text-xs">Operator</p>
+                        <p className="font-medium text-gray-900 truncate">{order.nama_operator}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500 text-xs">Mesin</p>
+                        <p className="font-medium text-gray-900">{order.kode_mesin}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
           </div>
         )}
       </div>
