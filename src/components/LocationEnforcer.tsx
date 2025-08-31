@@ -1,118 +1,98 @@
 import React, { useEffect, useState } from 'react';
-import { MapPin, AlertCircle, RefreshCw } from 'lucide-react';
+import { MapPin, AlertCircle } from 'lucide-react';
 import { useLocation } from '../contexts/LocationContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const LocationEnforcer: React.FC = () => {
   const { location, hasLocation, setLocation } = useLocation();
+  const { user } = useAuth();
   const [locationError, setLocationError] = useState<string | null>(null);
-  const [isRequesting, setIsRequesting] = useState(false);
 
   const requestLocation = () => {
     if (!navigator.geolocation) {
-      setLocationError('Browser Anda tidak mendukung geolokasi');
+      setLocationError('Browser tidak mendukung geolokasi');
       return;
     }
 
-    setIsRequesting(true);
     setLocationError(null);
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setIsRequesting(false);
         setLocationError(null);
         setLocation({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
           accuracy: position.coords.accuracy,
-          timestamp: position.timestamp,
-          address: ''
+          timestamp: position.timestamp
         });
       },
       (error) => {
-        setIsRequesting(false);
         let errorMessage = 'Gagal mendapatkan lokasi';
         
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            errorMessage = 'Akses lokasi ditolak. Silakan aktifkan lokasi di browser Anda.';
+            errorMessage = 'Akses lokasi ditolak';
             break;
           case error.POSITION_UNAVAILABLE:
-            errorMessage = 'Informasi lokasi tidak tersedia.';
+            errorMessage = 'Lokasi tidak tersedia';
             break;
           case error.TIMEOUT:
-            errorMessage = 'Waktu permintaan lokasi habis.';
+            errorMessage = 'Waktu habis';
             break;
           default:
-            errorMessage = 'Terjadi kesalahan saat mendapatkan lokasi.';
+            errorMessage = 'Terjadi kesalahan';
         }
         
         setLocationError(errorMessage);
       },
       {
         enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 60000
+        timeout: 10000,
+        maximumAge: 0
       }
     );
   };
 
   // Auto-request location when component mounts if not available
   useEffect(() => {
-    if (!hasLocation && navigator.geolocation) {
+    if (!hasLocation && navigator.geolocation && user?.peran === 'operator') {
       requestLocation();
     }
-  }, [hasLocation]);
+  }, [hasLocation, user?.peran]);
 
-  // Show modal if location is not available
-  if (!hasLocation) {
+  // Show modal if location is not available and user is operator
+  if (!hasLocation && user?.peran === 'operator') {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-6 max-w-md mx-4 shadow-xl">
+        <div className="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-xl">
           <div className="flex items-center justify-center mb-4">
-            <MapPin className="w-12 h-12 text-blue-500" />
+            <MapPin className="w-10 h-10 text-blue-500" />
           </div>
           
-          <h2 className="text-xl font-semibold text-center mb-4">
+          <h2 className="text-lg font-semibold text-center mb-2">
             Lokasi Diperlukan
           </h2>
           
-          <p className="text-gray-600 text-center mb-6">
-            Aplikasi ini memerlukan akses lokasi untuk berfungsi dengan baik. 
-            Silakan aktifkan izin lokasi di browser Anda.
+          <p className="text-gray-600 text-center mb-4 text-sm">
+            Aplikasi memerlukan akses lokasi untuk berfungsi.
           </p>
 
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+            <div className="text-blue-700 text-sm space-y-1">
+              <p>• Klik ikon kunci di address bar browser</p>
+              <p>• Pilih "Allow" untuk mengizinkan lokasi</p>
+              <p>• Refresh halaman setelah mengizinkan</p>
+            </div>
+          </div>
+
           {locationError && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
               <div className="flex items-center">
-                <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
+                <AlertCircle className="w-4 h-4 text-red-500 mr-2" />
                 <span className="text-red-700 text-sm">{locationError}</span>
               </div>
             </div>
           )}
-
-          <div className="space-y-3">
-            <button
-              onClick={requestLocation}
-              disabled={isRequesting}
-              className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center"
-            >
-              {isRequesting ? (
-                <>
-                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                  Mengambil Lokasi...
-                </>
-              ) : (
-                'Aktifkan Lokasi'
-              )}
-            </button>
-            
-            <div className="text-xs text-gray-500 text-center space-y-1">
-              <p>• Pastikan browser mengizinkan akses lokasi</p>
-              <p>• Jika menggunakan Chrome, klik ikon kunci di address bar</p>
-              <p>• Pilih "Allow" untuk mengizinkan lokasi</p>
-              <p>• Refresh halaman setelah mengizinkan lokasi</p>
-            </div>
-          </div>
         </div>
       </div>
     );

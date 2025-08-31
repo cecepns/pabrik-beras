@@ -51,10 +51,12 @@ const CreateOrder: React.FC = () => {
 
   // Update alamat pengambilan ketika lokasi tersedia
   useEffect(() => {
-    if (location && location.address) {
+    if (location && location.latitude !== null && location.longitude !== null) {
+      const lat = location.latitude;
+      const lng = location.longitude;
       setFormData(prev => ({
         ...prev,
-        alamat_pengambilan: location.address || 'Lokasi tidak tersedia'
+        alamat_pengambilan: `Koordinat: ${lng.toFixed(6)}, ${lat.toFixed(6)}`
       }));
     }
   }, [location]);

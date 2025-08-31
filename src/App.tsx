@@ -1,9 +1,8 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { AuthProvider } from './contexts/AuthContext';
-import { useAuth } from './contexts/AuthContext';
-import { LocationProvider, useLocation } from './contexts/LocationContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { LocationProvider, useLocation as useLocationContext } from './contexts/LocationContext';
 import LocationEnforcer from './components/LocationEnforcer';
 import Login from './components/Login';
 import AdminDashboard from './components/admin/AdminDashboard';
@@ -42,30 +41,32 @@ function ProtectedRoute({ children, requireAdmin = false }: { children: React.Re
 function LocationProtectedRoute({ 
   children, 
   requireAdmin = false, 
-  requireLocation = true 
+  requireLocation = true,
+  forceLocationUpdate = true // Default true untuk selalu update lokasi
 }: { 
   children: React.ReactNode; 
   requireAdmin?: boolean; 
   requireLocation?: boolean;
+  forceLocationUpdate?: boolean;
 }) {
-  const { setLocation, hasLocation } = useLocation();
+  const { setLocation, hasLocation } = useLocationContext();
+  const location = useLocation(); // React Router location
 
   // Jika tidak memerlukan lokasi, gunakan ProtectedRoute biasa
   if (!requireLocation) {
     return <ProtectedRoute requireAdmin={requireAdmin}>{children}</ProtectedRoute>;
   }
 
-  // Jika memerlukan lokasi tapi belum ada lokasi, coba dapatkan di background
+  // Jika memerlukan lokasi, selalu coba dapatkan lokasi baru setiap route change
   React.useEffect(() => {
-    if (requireLocation && !hasLocation && navigator.geolocation) {
+    if (requireLocation && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setLocation({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
             accuracy: position.coords.accuracy,
-            timestamp: position.timestamp,
-            address: '' // Alamat akan diisi oleh LocationStatus component
+            timestamp: Date.now()
           });
         },
         () => {
@@ -74,11 +75,11 @@ function LocationProtectedRoute({
         {
           enableHighAccuracy: true,
           timeout: 10000,
-          maximumAge: 60000
+          maximumAge: 0 // Tidak ada cache, selalu request lokasi baru
         }
       );
     }
-  }, [requireLocation, hasLocation, setLocation]);
+  }, [requireLocation, setLocation, location.pathname]); // Selalu trigger ketika route berubah
 
   // Selalu render children, tidak peduli status lokasi
   return <ProtectedRoute requireAdmin={requireAdmin}>{children}</ProtectedRoute>;

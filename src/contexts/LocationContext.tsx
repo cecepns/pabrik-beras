@@ -1,11 +1,10 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 interface LocationData {
   latitude: number | null;
   longitude: number | null;
   accuracy: number | null;
   timestamp: number | null;
-  address?: string;
 }
 
 interface LocationContextType {
@@ -17,7 +16,7 @@ interface LocationContextType {
 
 const LocationContext = createContext<LocationContextType | undefined>(undefined);
 
-export const useLocation = () => {
+const useLocation = () => {
   const context = useContext(LocationContext);
   if (context === undefined) {
     throw new Error('useLocation must be used within a LocationProvider');
@@ -29,13 +28,17 @@ interface LocationProviderProps {
   children: ReactNode;
 }
 
-export const LocationProvider: React.FC<LocationProviderProps> = ({ children }) => {
-  const [location, setLocation] = useState<LocationData | null>(null);
+const LocationProvider: React.FC<LocationProviderProps> = ({ children }) => {
+  const [location, setLocationState] = useState<LocationData | null>(null);
 
   const hasLocation = location !== null && location.latitude !== null && location.longitude !== null;
 
+  const setLocation = (newLocation: LocationData | null) => {
+    setLocationState(newLocation);
+  };
+
   const clearLocation = () => {
-    setLocation(null);
+    setLocationState(null);
   };
 
   const value: LocationContextType = {
@@ -51,3 +54,6 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({ children }) 
     </LocationContext.Provider>
   );
 };
+
+export { useLocation, LocationProvider };
+export type { LocationData, LocationContextType };
