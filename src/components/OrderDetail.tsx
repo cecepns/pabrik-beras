@@ -109,22 +109,22 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ isAdmin = false }) => {
         <div className="space-y-4 sm:space-y-6">
           {/* Header */}
           <div className="bg-white rounded-xl shadow-sm border p-4 sm:p-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
               <div className="min-w-0 flex-1">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">Detail Order #{order.id}</h1>
-                <p className="text-sm sm:text-base text-gray-600 truncate">{order.nama_pelanggan}</p>
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Detail Order #{order.id}</h1>
+                <p className="text-sm sm:text-base text-gray-600 mt-1">{order.nama_pelanggan}</p>
               </div>
-              <div className="flex items-center space-x-2 sm:space-x-3 w-full sm:w-auto">
-                <span className="px-2 sm:px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs sm:text-sm font-medium">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 w-full lg:w-auto">
+                <span className="px-3 py-1.5 bg-green-100 text-green-800 rounded-full text-xs sm:text-sm font-medium self-start sm:self-auto">
                   {order.status}
                 </span>
-                <div className="text-right text-xs sm:text-sm text-gray-600">
-                  <div className="flex items-center space-x-1">
-                    <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span>{new Date(order.dibuat_pada).toLocaleDateString('id-ID')}</span>
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {new Date(order.dibuat_pada).toLocaleTimeString('id-ID')}
+                <div className="text-left sm:text-right text-xs sm:text-sm text-gray-600">
+                  <div className="flex items-center space-x-1.5">
+                    <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500" />
+                    <span>
+                      {new Date(order.dibuat_pada).toLocaleDateString('id-ID')}{' '}
+                      {new Date(order.dibuat_pada).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false, hourCycle: 'h23' }).replace('.', ':')}
+                    </span>
                   </div>
                 </div>
               </div>
