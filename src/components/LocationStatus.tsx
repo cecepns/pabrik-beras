@@ -5,8 +5,6 @@ import { useLocation } from '../contexts/LocationContext';
 const LocationStatus: React.FC = () => {
   const { hasLocation, location } = useLocation();
 
-  console.log(location);
-
   if (!hasLocation || !location || !location.latitude || !location.longitude) {
     return null;
   }

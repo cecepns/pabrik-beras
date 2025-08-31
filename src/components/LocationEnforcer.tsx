@@ -6,6 +6,7 @@ import { useLocation as useRouterLocation } from 'react-router-dom';
 
 const LocationEnforcer: React.FC = () => {
   const { hasLocation, setLocation } = useLocation();
+  const [onLoading, setOnLoading] = useState(false);
   const { user } = useAuth();
   const routerLocation = useRouterLocation();
   const [locationError, setLocationError] = useState<string | null>(null);
@@ -28,6 +29,7 @@ const LocationEnforcer: React.FC = () => {
           accuracy: position.coords.accuracy,
           timestamp: position.timestamp
         });
+        setOnLoading(false);
       },
       (error) => {        
         let errorMessage = 'Gagal mendapatkan lokasi';
@@ -47,6 +49,7 @@ const LocationEnforcer: React.FC = () => {
         }
         
         setLocationError(errorMessage);
+        setOnLoading(false);
       },
       {
         enableHighAccuracy: true,
@@ -59,6 +62,8 @@ const LocationEnforcer: React.FC = () => {
   // Request location setiap kali halaman berubah atau komponen mount
   useEffect(() => {
     if (user?.peran === 'operator' && navigator.geolocation) {
+      setOnLoading(true);
+
       // Clear previous timeout if exists
       if (requestTimeoutRef.current) {
         clearTimeout(requestTimeoutRef.current);
@@ -78,7 +83,7 @@ const LocationEnforcer: React.FC = () => {
   }, [user?.peran, routerLocation.pathname]); // Trigger setiap kali pathname berubah
 
   // Show modal if location is not available and user is operator
-  if (!hasLocation && user?.peran === 'operator') {
+  if (!hasLocation && user?.peran === 'operator' && !onLoading) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-xl">

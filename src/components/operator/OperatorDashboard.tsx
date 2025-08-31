@@ -11,7 +11,6 @@ interface Order {
   nama_karnet?: string;
   berat_gabah_kg: number;
   jumlah_karung: number;
-  status: string;
   dibuat_pada: string;
 }
 
@@ -123,7 +122,6 @@ const OperatorDashboard: React.FC = () => {
                   <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Karnet</th>
                   <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Berat (kg)</th>
                   <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Karung</th>
-                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                   <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
                   <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
                 </tr>
@@ -131,7 +129,7 @@ const OperatorDashboard: React.FC = () => {
               <tbody className="divide-y divide-gray-200">
                 {orders.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-4 sm:px-6 py-8 text-center text-gray-500">
+                    <td colSpan={7} className="px-4 sm:px-6 py-8 text-center text-gray-500">
                       {search ? 'Tidak ada order yang cocok dengan pencarian' : 'Belum ada order dibuat'}
                     </td>
                   </tr>
@@ -152,11 +150,6 @@ const OperatorDashboard: React.FC = () => {
                       </td>
                       <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                         {order.jumlah_karung}
-                      </td>
-                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                        <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-                          {order.status}
-                        </span>
                       </td>
                       <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                         {new Date(order.dibuat_pada).toLocaleDateString('id-ID')}
@@ -195,9 +188,6 @@ const OperatorDashboard: React.FC = () => {
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-1">
                       <span className="text-sm font-medium text-gray-900">#{order.id}</span>
-                      <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-                        {order.status}
-                      </span>
                     </div>
                     <h3 className="font-medium text-gray-900 text-sm sm:text-base group-hover:text-green-700 transition-colors">
                       {order.nama_pelanggan}
