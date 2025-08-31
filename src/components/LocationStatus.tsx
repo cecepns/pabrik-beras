@@ -5,8 +5,6 @@ import { useLocation } from '../contexts/LocationContext';
 const LocationStatus: React.FC = () => {
   const { location, hasLocation, setLocation } = useLocation();
 
-
-
   const formatAddress = (address: string) => {
     // Split address by commas and take the most relevant parts
     const parts = address.split(', ');
@@ -72,31 +70,6 @@ const LocationStatus: React.FC = () => {
       return 'Gagal mendapatkan alamat';
     }
   };
-
-  // Auto-request location when component mounts if not available
-  useEffect(() => {
-    if (!hasLocation && navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            accuracy: position.coords.accuracy,
-            timestamp: position.timestamp,
-            address: ''
-          });
-        },
-        () => {
-          // Silent fail for auto-request
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 60000
-        }
-      );
-    }
-  }, [hasLocation, setLocation]);
 
   // Auto-request address when location is available but address is empty
   useEffect(() => {

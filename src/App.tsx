@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
 import { useAuth } from './contexts/AuthContext';
 import { LocationProvider, useLocation } from './contexts/LocationContext';
+import LocationEnforcer from './components/LocationEnforcer';
 import Login from './components/Login';
 import AdminDashboard from './components/admin/AdminDashboard';
 import OperatorDashboard from './components/operator/OperatorDashboard';
@@ -168,6 +169,7 @@ function App() {
         <Router>
           <div className="min-h-screen bg-gray-50">
             <AppRoutes />
+            <LocationEnforcer />
             <Toaster position="top-right" />
           </div>
         </Router>
