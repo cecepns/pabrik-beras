@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS pesanan (
   alamat_pengambilan VARCHAR(300) NOT NULL,
   id_operator INT NOT NULL,
   id_mesin INT NOT NULL,
-  status ENUM('Baru') DEFAULT 'Baru',
+
   dibuat_pada TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   diperbarui_pada TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (id_operator) REFERENCES pengguna(id) ON DELETE RESTRICT,

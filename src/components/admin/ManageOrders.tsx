@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../Layout';
-import { Search, Eye } from 'lucide-react';
+import { Search, Eye, Edit, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 interface Order {
   id: number;
@@ -9,7 +10,6 @@ interface Order {
   nama_karnet?: string;
   berat_gabah_kg: number;
   jumlah_karung: number;
-  status: string;
   dibuat_pada: string;
   nama_operator: string;
   kode_mesin: string;
@@ -65,6 +65,32 @@ const ManageOrders: React.FC = () => {
     setCurrentPage(1);
   };
 
+  const handleDeleteOrder = async (orderId: number) => {
+    if (!window.confirm('Apakah Anda yakin ingin menghapus order ini? Tindakan ini tidak dapat dibatalkan.')) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        toast.success('Order berhasil dihapus');
+        fetchOrders(); // Refresh the list
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.message || 'Gagal menghapus order');
+      }
+    } catch (error) {
+      toast.error('Terjadi kesalahan saat menghapus order');
+    }
+  };
+
   return (
     <Layout>
       <div className="space-y-4 sm:space-y-6">
@@ -105,20 +131,19 @@ const ManageOrders: React.FC = () => {
                       <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Karnet</th>
                       <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Berat (kg)</th>
                       <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Karung</th>
-                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Operator</th>
-                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mesin</th>
-                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
+                                             <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Operator</th>
+                       <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mesin</th>
+                       <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
                       <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {orders.length === 0 ? (
-                      <tr>
-                        <td colSpan={10} className="px-4 sm:px-6 py-8 text-center text-gray-500">
-                          {search ? 'Tidak ada order yang cocok dengan pencarian' : 'Belum ada order'}
-                        </td>
-                      </tr>
+                                         {orders.length === 0 ? (
+                       <tr>
+                         <td colSpan={9} className="px-4 sm:px-6 py-8 text-center text-gray-500">
+                           {search ? 'Tidak ada order yang cocok dengan pencarian' : 'Belum ada order'}
+                         </td>
+                       </tr>
                     ) : (
                       orders.map((order) => (
                         <tr key={order.id} className="hover:bg-gray-50">
@@ -140,25 +165,36 @@ const ManageOrders: React.FC = () => {
                           <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                             {order.nama_operator}
                           </td>
-                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                            {order.kode_mesin}
-                          </td>
-                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                            <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-                              {order.status}
-                            </span>
-                          </td>
-                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                                     <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                             {order.kode_mesin}
+                           </td>
+                           <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                             {new Date(order.dibuat_pada).toLocaleDateString('id-ID')}
                           </td>
                           <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                            <Link
-                              to={`/admin/orders/${order.id}`}
-                              className="inline-flex items-center space-x-1 text-green-600 hover:text-green-800"
-                            >
-                              <Eye className="w-4 h-4" />
-                              <span>Detail</span>
-                            </Link>
+                            <div className="flex items-center space-x-2">
+                              <Link
+                                to={`/admin/orders/${order.id}`}
+                                className="inline-flex items-center space-x-1 text-green-600 hover:text-green-800"
+                              >
+                                <Eye className="w-4 h-4" />
+                                <span>Detail</span>
+                              </Link>
+                              <Link
+                                to={`/admin/orders/${order.id}/edit`}
+                                className="inline-flex items-center space-x-1 text-blue-600 hover:text-blue-800"
+                              >
+                                <Edit className="w-4 h-4" />
+                                <span>Edit</span>
+                              </Link>
+                              <button
+                                onClick={() => handleDeleteOrder(order.id)}
+                                className="inline-flex items-center space-x-1 text-red-600 hover:text-red-800"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                                <span>Hapus</span>
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))
@@ -187,24 +223,34 @@ const ManageOrders: React.FC = () => {
               <div key={order.id} className="bg-white rounded-xl shadow-sm border p-4">
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <span className="text-sm font-medium text-gray-900">#{order.id}</span>
-                      <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-                        {order.status}
-                      </span>
-                    </div>
+                                         <div className="flex items-center space-x-2 mb-1">
+                       <span className="text-sm font-medium text-gray-900">#{order.id}</span>
+                     </div>
                     <h3 className="font-medium text-gray-900 text-sm sm:text-base truncate">{order.nama_pelanggan}</h3>
                     {order.nama_karnet && (
                       <p className="text-xs text-gray-600 mt-1">Karnet: {order.nama_karnet}</p>
                     )}
                   </div>
-                  <Link
-                    to={`/admin/orders/${order.id}`}
-                    className="inline-flex items-center space-x-1 text-green-600 hover:text-green-800 text-sm"
-                  >
-                    <Eye className="w-4 h-4" />
-                    <span>Detail</span>
-                  </Link>
+                  <div className="flex space-x-2">
+                    <Link
+                      to={`/admin/orders/${order.id}`}
+                      className="inline-flex items-center space-x-1 text-green-600 hover:text-green-800 text-sm"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </Link>
+                    <Link
+                      to={`/admin/orders/${order.id}/edit`}
+                      className="inline-flex items-center space-x-1 text-blue-600 hover:text-blue-800 text-sm"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Link>
+                    <button
+                      onClick={() => handleDeleteOrder(order.id)}
+                      className="inline-flex items-center space-x-1 text-red-600 hover:text-red-800 text-sm"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-3 text-sm">

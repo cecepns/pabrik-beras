@@ -440,6 +440,142 @@ app.get('/api/orders/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// Update order (Admin only)
+app.put('/api/orders/:id', authenticateToken, requireAdmin, upload.array('new_photos'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+             nama_pelanggan,
+       kontak_pelanggan,
+       nama_karnet,
+       jumlah_karung,
+       berat_gabah_kg,
+       lokasi_pengolahan,
+       catatan,
+       alamat_pengambilan
+    } = req.body;
+
+    // Check if order exists
+    const [existingOrder] = await db.execute('SELECT * FROM pesanan WHERE id = ?', [id]);
+    if (existingOrder.length === 0) {
+      return res.status(404).json({ message: 'Order tidak ditemukan' });
+    }
+
+         // Update order data
+     const updateQuery = `
+       UPDATE pesanan SET 
+         nama_pelanggan = ?,
+         kontak_pelanggan = ?,
+         nama_karnet = ?,
+         jumlah_karung = ?,
+         berat_gabah_kg = ?,
+         lokasi_pengolahan = ?,
+         catatan = ?,
+         alamat_pengambilan = ?,
+         diperbarui_pada = NOW()
+       WHERE id = ?
+     `;
+
+         await db.execute(updateQuery, [
+       nama_pelanggan,
+       kontak_pelanggan || null,
+       nama_karnet || null,
+       jumlah_karung,
+       berat_gabah_kg,
+       lokasi_pengolahan || null,
+       catatan || null,
+       alamat_pengambilan || null,
+       id
+     ]);
+
+    // Handle photo deletions
+    if (req.body.photos_to_delete) {
+      const photosToDelete = JSON.parse(req.body.photos_to_delete);
+      if (photosToDelete.length > 0) {
+        // Get photo file paths before deletion
+        const [photosToDeleteData] = await db.execute(
+          'SELECT url_bukti_foto FROM bukti_foto WHERE id IN (?)',
+          [photosToDelete]
+        );
+
+        // Delete photos from database
+        await db.execute('DELETE FROM bukti_foto WHERE id IN (?)', [photosToDelete]);
+
+        // Delete photo files from server
+        photosToDeleteData.forEach(photo => {
+          const filePath = path.join(__dirname, photo.url_bukti_foto);
+          if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+          }
+        });
+      }
+    }
+
+    // Handle new photo uploads
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        const fileName = `bukti-${Date.now()}-${Math.floor(Math.random() * 1000000000)}.${path.extname(file.originalname)}`;
+        const filePath = path.join(__dirname, 'uploads-pabrik-beras', fileName);
+        
+        // Save file
+        await fs.promises.writeFile(filePath, file.buffer);
+        
+        // Save to database
+        await db.execute(
+          'INSERT INTO bukti_foto (id_pesanan, url_bukti_foto, nama_file, ukuran_file, tipe_file) VALUES (?, ?, ?, ?, ?)',
+          [
+            id,
+            `/uploads-pabrik-beras/${fileName}`,
+            file.originalname,
+            file.size,
+            file.mimetype
+          ]
+        );
+      }
+    }
+
+    res.json({ message: 'Order berhasil diperbarui' });
+  } catch (error) {
+    console.error('Update order error:', error);
+    res.status(500).json({ message: 'Terjadi kesalahan server' });
+  }
+});
+
+// Delete order (Admin only)
+app.delete('/api/orders/:id', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Check if order exists
+    const [existingOrder] = await db.execute('SELECT * FROM pesanan WHERE id = ?', [id]);
+    if (existingOrder.length === 0) {
+      return res.status(404).json({ message: 'Order tidak ditemukan' });
+    }
+
+    // Get all photos for this order
+    const [photos] = await db.execute('SELECT url_bukti_foto FROM bukti_foto WHERE id_pesanan = ?', [id]);
+
+    // Delete photos from database
+    await db.execute('DELETE FROM bukti_foto WHERE id_pesanan = ?', [id]);
+
+    // Delete photo files from server
+    photos.forEach(photo => {
+      const filePath = path.join(__dirname, photo.url_bukti_foto);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    });
+
+    // Delete order
+    await db.execute('DELETE FROM pesanan WHERE id = ?', [id]);
+
+    res.json({ message: 'Order berhasil dihapus' });
+  } catch (error) {
+    console.error('Delete order error:', error);
+    res.status(500).json({ message: 'Terjadi kesalahan server' });
+  }
+});
+
 // USER MANAGEMENT ROUTES (Admin only)
 app.get('/api/users', authenticateToken, requireAdmin, async (req, res) => {
   try {

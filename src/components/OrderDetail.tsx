@@ -24,7 +24,6 @@ interface OrderDetail {
   lokasi_pengolahan: string;
   catatan?: string;
   alamat_pengambilan: string;
-  status: string;
   dibuat_pada: string;
   nama_operator: string;
   kode_mesin: string;
@@ -115,9 +114,6 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ isAdmin = false }) => {
                 <p className="text-sm sm:text-base text-gray-600 mt-1">{order.nama_pelanggan}</p>
               </div>
               <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 w-full lg:w-auto">
-                <span className="px-3 py-1.5 bg-green-100 text-green-800 rounded-full text-xs sm:text-sm font-medium self-start sm:self-auto">
-                  {order.status}
-                </span>
                 <div className="text-left sm:text-right text-xs sm:text-sm text-gray-600">
                   <div className="flex items-center space-x-1.5">
                     <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500" />

@@ -11,6 +11,7 @@ import CreateOrder from './components/operator/CreateOrder';
 import OrderDetail from './components/OrderDetail';
 import ChangePassword from './components/ChangePassword';
 import ManageOrders from './components/admin/ManageOrders';
+import EditOrder from './components/admin/EditOrder';
 import ManageUsers from './components/admin/ManageUsers';
 import ManageMachines from './components/admin/ManageMachines';
 import Settings from './components/admin/Settings';
@@ -130,6 +131,12 @@ function AppRoutes() {
       <Route path="/admin/orders/:id" element={
         <LocationProtectedRoute requireAdmin requireLocation={false}>
           <OrderDetail isAdmin={true} />
+        </LocationProtectedRoute>
+      } />
+
+      <Route path="/admin/orders/:id/edit" element={
+        <LocationProtectedRoute requireAdmin requireLocation={false}>
+          <EditOrder />
         </LocationProtectedRoute>
       } />
 
