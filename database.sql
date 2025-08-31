@@ -3,8 +3,8 @@
 -- Description: SQL file untuk setup database pabrik beras
 
 -- Create database
-CREATE DATABASE IF NOT EXISTS pabrik_beras;
-USE pabrik_beras;
+CREATE DATABASE IF NOT EXISTS `isad8273_pabrik-beras-suryanto`;
+USE `isad8273_pabrik-beras-suryanto`;
 
 -- Table: mesin (machines)
 CREATE TABLE IF NOT EXISTS mesin (
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS pengaturan (
 SET @has_old_column = (
   SELECT COUNT(*) 
   FROM INFORMATION_SCHEMA.COLUMNS 
-  WHERE TABLE_SCHEMA = 'pabrik_beras' 
+  WHERE TABLE_SCHEMA = 'isad8273_pabrik-beras-suryanto' 
     AND TABLE_NAME = 'pesanan' 
     AND COLUMN_NAME = 'url_bukti_foto'
 );
