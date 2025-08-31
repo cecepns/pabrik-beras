@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Layout from '../Layout';
+import Layout from './Layout';
 import { ArrowLeft, User, Phone, FileText, Package, Scale, MapPin, Camera, Calendar, Cog } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -33,7 +33,11 @@ interface OrderDetail {
   photos: Photo[];
 }
 
-const OrderDetail: React.FC = () => {
+interface OrderDetailProps {
+  isAdmin?: boolean;
+}
+
+const OrderDetail: React.FC<OrderDetailProps> = ({ isAdmin = false }) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [order, setOrder] = useState<OrderDetail | null>(null);
@@ -59,11 +63,11 @@ const OrderDetail: React.FC = () => {
         setOrder(data);
       } else {
         toast.error('Order tidak ditemukan');
-        navigate('/');
+        navigate(isAdmin ? '/admin/orders' : '/');
       }
     } catch (error) {
       toast.error('Terjadi kesalahan saat memuat data');
-      navigate('/');
+      navigate(isAdmin ? '/admin/orders' : '/');
     } finally {
       setLoading(false);
     }
@@ -94,11 +98,11 @@ const OrderDetail: React.FC = () => {
       <div className="max-w-4xl mx-auto">
         <div className="mb-4 sm:mb-6">
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate(isAdmin ? '/admin/orders' : '/')}
             className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors text-sm sm:text-base"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Kembali ke Dashboard</span>
+            <span>{isAdmin ? 'Kembali ke Manajemen Order' : 'Kembali ke Dashboard'}</span>
           </button>
         </div>
 

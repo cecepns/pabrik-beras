@@ -153,7 +153,7 @@ const ManageOrders: React.FC = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                             <Link
-                              to={`/orders/${order.id}`}
+                              to={`/admin/orders/${order.id}`}
                               className="inline-flex items-center space-x-1 text-green-600 hover:text-green-800"
                             >
                               <Eye className="w-4 h-4" />

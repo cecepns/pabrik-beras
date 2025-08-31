@@ -7,7 +7,7 @@ import Login from './components/Login';
 import AdminDashboard from './components/admin/AdminDashboard';
 import OperatorDashboard from './components/operator/OperatorDashboard';
 import CreateOrder from './components/operator/CreateOrder';
-import OrderDetail from './components/operator/OrderDetail';
+import OrderDetail from './components/OrderDetail';
 import ChangePassword from './components/ChangePassword';
 import ManageOrders from './components/admin/ManageOrders';
 import ManageUsers from './components/admin/ManageUsers';
@@ -76,6 +76,12 @@ function AppRoutes() {
       <Route path="/admin/orders" element={
         <ProtectedRoute requireAdmin>
           <ManageOrders />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/admin/orders/:id" element={
+        <ProtectedRoute requireAdmin>
+          <OrderDetail isAdmin={true} />
         </ProtectedRoute>
       } />
 
