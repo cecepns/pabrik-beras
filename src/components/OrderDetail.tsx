@@ -168,6 +168,26 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ isAdmin = false }) => {
                   <div className="min-w-0 flex-1">
                     <p className="text-xs sm:text-sm text-gray-600">Alamat Pengambilan</p>
                     <p className="font-medium text-gray-900 text-sm sm:text-base">{order.alamat_pengambilan}</p>
+                    {(() => {
+                      const coordMatch = order.alamat_pengambilan.match(/Koordinat:\s*([-\d.]+),\s*([-\d.]+)/);
+                      if (coordMatch) {
+                        const lng = coordMatch[1];
+                        const lat = coordMatch[2];
+                        const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+                        return (
+                          <a
+                            href={googleMapsUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center mt-1 text-xs text-blue-600 hover:text-blue-800 hover:underline"
+                          >
+                            <MapPin className="w-3 h-3 mr-1" />
+                            Lihat di Google Maps
+                          </a>
+                        );
+                      }
+                      return null;
+                    })()}
                   </div>
                 </div>
               </div>
