@@ -1,7 +1,7 @@
 // Konfigurasi API
 export const API_CONFIG = {
   // Base URL untuk API
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000',
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://api-inventory.isavralabel.com/pabrik-beras',
   
   // Endpoint lengkap
   ENDPOINTS: {
