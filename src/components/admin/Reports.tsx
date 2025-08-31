@@ -63,12 +63,7 @@ const Reports: React.FC = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const params = new URLSearchParams({
-        type: filters.type,
-        start_date: filters.start_date,
-        end_date: filters.end_date,
-        ...(filters.operator_id && { operator_id: filters.operator_id })
-      });
+
 
       const response = await fetch(getApiUrlWithParams(API_CONFIG.ENDPOINTS.REPORTS, {
         type: filters.type,

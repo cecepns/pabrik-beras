@@ -15,7 +15,7 @@ const ManageMachines: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingMachine, setEditingMachine] = useState<Machine | null>(null);
-  const [pagination, setPagination] = useState<any>(null);
+  const [pagination, setPagination] = useState<{ currentPage: number; totalPages: number } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
   const [formData, setFormData] = useState({

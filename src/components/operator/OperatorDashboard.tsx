@@ -37,10 +37,7 @@ const OperatorDashboard: React.FC = () => {
   const fetchOrders = async () => {
     try {
       const token = localStorage.getItem('token');
-      const params = new URLSearchParams({
-        page: currentPage.toString(),
-        ...(search && { search })
-      });
+
 
       const response = await fetch(getApiUrlWithParams(API_CONFIG.ENDPOINTS.ORDERS, {
         page: currentPage.toString(),

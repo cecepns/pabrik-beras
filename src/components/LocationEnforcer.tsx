@@ -4,7 +4,7 @@ import { useLocation } from '../contexts/LocationContext';
 import { useAuth } from '../contexts/AuthContext';
 
 const LocationEnforcer: React.FC = () => {
-  const { location, hasLocation, setLocation } = useLocation();
+  const { hasLocation, setLocation } = useLocation();
   const { user } = useAuth();
   const [locationError, setLocationError] = useState<string | null>(null);
 

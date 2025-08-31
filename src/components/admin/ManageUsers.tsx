@@ -25,7 +25,7 @@ const ManageUsers: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
-  const [pagination, setPagination] = useState<any>(null);
+  const [pagination, setPagination] = useState<{ currentPage: number; totalPages: number; totalItems: number; hasPrev: boolean; hasNext: boolean } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -116,7 +116,13 @@ const ManageUsers: React.FC = () => {
       
       const method = editingUser ? 'PUT' : 'POST';
 
-      const submitData: any = {
+      const submitData: {
+        nama_pengguna: string;
+        nama_lengkap: string;
+        peran: 'admin' | 'operator';
+        id_mesin_ditugaskan: number | null;
+        kata_sandi?: string;
+      } = {
         nama_pengguna: formData.nama_pengguna,
         nama_lengkap: formData.nama_lengkap,
         peran: formData.peran,

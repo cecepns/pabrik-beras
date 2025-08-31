@@ -34,9 +34,6 @@ export const API_CONFIG = {
     // Reports endpoints
     REPORTS: '/api/reports',
     OPERATORS: '/api/operators',
-    
-    // Static files
-    UPLOADS: '/uploads-pabrik-beras',
   }
 };
 

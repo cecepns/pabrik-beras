@@ -42,21 +42,14 @@ function ProtectedRoute({ children, requireAdmin = false }: { children: React.Re
 function LocationProtectedRoute({ 
   children, 
   requireAdmin = false, 
-  requireLocation = true,
-  forceLocationUpdate = true // Default true untuk selalu update lokasi
+  requireLocation = true
 }: { 
   children: React.ReactNode; 
   requireAdmin?: boolean; 
   requireLocation?: boolean;
-  forceLocationUpdate?: boolean;
 }) {
-  const { setLocation, hasLocation } = useLocationContext();
-  const location = useLocation(); // React Router location
-
-  // Jika tidak memerlukan lokasi, gunakan ProtectedRoute biasa
-  if (!requireLocation) {
-    return <ProtectedRoute requireAdmin={requireAdmin}>{children}</ProtectedRoute>;
-  }
+  const { setLocation } = useLocationContext();
+  const location = useLocation();
 
   // Jika memerlukan lokasi, selalu coba dapatkan lokasi baru setiap route change
   React.useEffect(() => {

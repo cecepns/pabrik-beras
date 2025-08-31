@@ -38,10 +38,7 @@ const ManageOrders: React.FC = () => {
   const fetchOrders = async () => {
     try {
       const token = localStorage.getItem('token');
-      const params = new URLSearchParams({
-        page: currentPage.toString(),
-        ...(search && { search })
-      });
+
 
       const response = await fetch(getApiUrlWithParams(API_CONFIG.ENDPOINTS.ORDERS, {
         page: currentPage.toString(),
@@ -57,8 +54,8 @@ const ManageOrders: React.FC = () => {
         setOrders(data.orders);
         setPagination(data.pagination);
       }
-    } catch (error) {
-      console.error('Error fetching orders:', error);
+    } catch {
+      console.error('Error fetching orders');
     } finally {
       setLoading(false);
     }
@@ -90,7 +87,7 @@ const ManageOrders: React.FC = () => {
         const errorData = await response.json();
         toast.error(errorData.message || 'Gagal menghapus order');
       }
-    } catch (error) {
+    } catch {
       toast.error('Terjadi kesalahan saat menghapus order');
     }
   };

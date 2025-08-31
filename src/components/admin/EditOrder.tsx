@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '../Layout';
-import { ArrowLeft, Upload, X, Camera } from 'lucide-react';
+import { ArrowLeft, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { getApiUrl, API_CONFIG } from '../../config/api';
 
@@ -86,7 +86,7 @@ const EditOrder: React.FC = () => {
         toast.error('Order tidak ditemukan');
         navigate('/admin/orders');
       }
-    } catch (error) {
+    } catch {
       toast.error('Terjadi kesalahan saat memuat data');
       navigate('/admin/orders');
     } finally {
@@ -161,7 +161,7 @@ const EditOrder: React.FC = () => {
         const errorData = await response.json();
         toast.error(errorData.message || 'Gagal memperbarui order');
       }
-    } catch (error) {
+    } catch {
       toast.error('Terjadi kesalahan saat memperbarui order');
     } finally {
       setSubmitting(false);

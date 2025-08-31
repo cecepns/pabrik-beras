@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle, XCircle, MapPin } from 'lucide-react';
+import { XCircle, MapPin } from 'lucide-react';
 import { useLocation } from '../contexts/LocationContext';
 
 const LocationStatus: React.FC = () => {
