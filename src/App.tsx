@@ -47,7 +47,6 @@ function LocationProtectedRoute({
   requireAdmin?: boolean; 
   requireLocation?: boolean;
 }) {
-  const { user } = useAuth();
   const { setLocation, hasLocation } = useLocation();
 
   // Jika tidak memerlukan lokasi, gunakan ProtectedRoute biasa
@@ -60,7 +59,6 @@ function LocationProtectedRoute({
     if (requireLocation && !hasLocation && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          console.log('Lokasi berhasil diperoleh di background:', position.coords);
           setLocation({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
@@ -69,9 +67,8 @@ function LocationProtectedRoute({
             address: '' // Alamat akan diisi oleh LocationStatus component
           });
         },
-        (error) => {
-          console.log('Lokasi ditolak atau gagal diperoleh di background:', error.message);
-          // Tidak perlu menampilkan error, user bisa request manual melalui LocationStatus
+        () => {
+          // Silent fail for background location request
         },
         {
           enableHighAccuracy: true,

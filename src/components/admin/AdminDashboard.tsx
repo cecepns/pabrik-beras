@@ -6,9 +6,7 @@ import {
   TrendingUp, 
   Package, 
   Scale, 
-  Clock,
-  Users,
-  FileText
+  Clock
 } from 'lucide-react';
 
 interface DashboardStats {

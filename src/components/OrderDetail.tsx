@@ -65,7 +65,7 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ isAdmin = false }) => {
         toast.error('Order tidak ditemukan');
         navigate(isAdmin ? '/admin/orders' : '/');
       }
-    } catch (error) {
+    } catch {
       toast.error('Terjadi kesalahan saat memuat data');
       navigate(isAdmin ? '/admin/orders' : '/');
     } finally {

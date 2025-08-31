@@ -145,7 +145,7 @@ const ManageUsers: React.FC = () => {
       } else {
         toast.error(data.message);
       }
-    } catch (error) {
+    } catch {
       toast.error('Terjadi kesalahan koneksi');
     }
   };
@@ -170,7 +170,7 @@ const ManageUsers: React.FC = () => {
       } else {
         toast.error(data.message);
       }
-    } catch (error) {
+    } catch {
       toast.error('Terjadi kesalahan koneksi');
     }
   };
@@ -198,7 +198,7 @@ const ManageUsers: React.FC = () => {
       } else {
         toast.error(data.message);
       }
-    } catch (error) {
+    } catch {
       toast.error('Terjadi kesalahan koneksi');
     }
   };

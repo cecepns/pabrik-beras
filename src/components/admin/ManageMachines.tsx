@@ -93,7 +93,7 @@ const ManageMachines: React.FC = () => {
       } else {
         toast.error(data.message);
       }
-    } catch (error) {
+    } catch {
       toast.error('Terjadi kesalahan koneksi');
     }
   };
@@ -118,7 +118,7 @@ const ManageMachines: React.FC = () => {
       } else {
         toast.error(data.message);
       }
-    } catch (error) {
+    } catch {
       toast.error('Terjadi kesalahan koneksi');
     }
   };

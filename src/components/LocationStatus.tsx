@@ -5,9 +5,7 @@ import { useLocation } from '../contexts/LocationContext';
 const LocationStatus: React.FC = () => {
   const { location, hasLocation, setLocation } = useLocation();
 
-  // Debug logging
-  console.log('LocationStatus - location:', location);
-  console.log('LocationStatus - hasLocation:', hasLocation);
+
 
   const formatAddress = (address: string) => {
     // Split address by commas and take the most relevant parts
@@ -69,8 +67,8 @@ const LocationStatus: React.FC = () => {
       } else {
         throw new Error('Gagal mendapatkan alamat');
       }
-    } catch (error) {
-      console.error('Error mendapatkan alamat:', error);
+    } catch {
+      console.error('Error mendapatkan alamat');
       return 'Gagal mendapatkan alamat';
     }
   };
@@ -78,10 +76,8 @@ const LocationStatus: React.FC = () => {
   // Auto-request location when component mounts if not available
   useEffect(() => {
     if (!hasLocation && navigator.geolocation) {
-      console.log('Auto-requesting location...');
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          console.log('Lokasi berhasil diperoleh secara otomatis:', position.coords);
           setLocation({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
@@ -90,8 +86,8 @@ const LocationStatus: React.FC = () => {
             address: ''
           });
         },
-        (error) => {
-          console.log('Auto-request lokasi gagal:', error.message);
+        () => {
+          // Silent fail for auto-request
         },
         {
           enableHighAccuracy: true,
@@ -105,7 +101,6 @@ const LocationStatus: React.FC = () => {
   // Auto-request address when location is available but address is empty
   useEffect(() => {
     if (hasLocation && location?.latitude && location?.longitude && !location?.address) {
-      console.log('Auto-requesting address...');
       getAddressFromCoordinates(location.latitude, location.longitude);
     }
   }, [hasLocation, location?.latitude, location?.longitude, location?.address]);

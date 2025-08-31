@@ -48,8 +48,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         localStorage.removeItem('user');
         setUser(null);
       }
-    } catch (error) {
-      console.error('Error fetching user:', error);
+    } catch {
+      console.error('Error fetching user');
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       setUser(null);
@@ -84,7 +84,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         toast.error(data.message || 'Login gagal');
         return false;
       }
-    } catch (error) {
+    } catch {
       toast.error('Terjadi kesalahan koneksi');
       return false;
     }

@@ -125,7 +125,6 @@ app.post('/api/auth/login', async (req, res) => {
     }
 
     const user = rows[0];
-    console.log(user.kata_sandi, kata_sandi);
     const validPassword = await bcrypt.compare(kata_sandi, user.kata_sandi);
 
     if (!validPassword) {

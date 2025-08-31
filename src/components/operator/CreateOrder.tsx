@@ -29,10 +29,7 @@ const CreateOrder: React.FC = () => {
     fetchSettings();
   }, []);
 
-  // Debug log untuk settings
-  useEffect(() => {
-    console.log('Current settings state:', settings);
-  }, [settings]);
+
 
   const fetchSettings = async () => {
     try {
@@ -43,7 +40,6 @@ const CreateOrder: React.FC = () => {
       
       if (response.ok) {
         const data = await response.json();
-        console.log('Settings fetched:', data); // Debug log
         setSettings(data);
       } else {
         console.error('Failed to fetch settings:', response.status, response.statusText);
@@ -117,7 +113,7 @@ const CreateOrder: React.FC = () => {
       } else {
         toast.error(data.message);
       }
-    } catch (error) {
+    } catch {
       toast.error('Terjadi kesalahan koneksi');
     } finally {
       setLoading(false);
@@ -129,7 +125,6 @@ const CreateOrder: React.FC = () => {
     const berat = parseFloat(formData.berat_gabah_kg) || 0;
     const hargaPerKg = settings.harga_per_kg || 0;
     const result = berat * hargaPerKg;
-    console.log('Estimasi harga calculation:', { berat, hargaPerKg, result }); // Debug log
     return result;
   }, [formData.berat_gabah_kg, settings.harga_per_kg]);
 
@@ -137,7 +132,6 @@ const CreateOrder: React.FC = () => {
     const berat = parseFloat(formData.berat_gabah_kg) || 0;
     const konsumsiPerKg = settings.konsumsi_bbm_per_kg || 0;
     const result = berat * konsumsiPerKg;
-    console.log('Estimasi konsumsi calculation:', { berat, konsumsiPerKg, result }); // Debug log
     return result;
   }, [formData.berat_gabah_kg, settings.konsumsi_bbm_per_kg]);
 

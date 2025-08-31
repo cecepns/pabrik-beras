@@ -24,7 +24,6 @@ const useLocation = (options: UseLocationOptions = {}) => {
     enableHighAccuracy = true,
     timeout = 10000,
     maximumAge = 60000,
-    required = true,
     autoRequest = false
   } = options;
 
@@ -66,7 +65,7 @@ const useLocation = (options: UseLocationOptions = {}) => {
           setLocationState(prev => ({ ...prev, permissionStatus: 'idle' }));
           return false;
         }
-      } catch (error) {
+      } catch {
         // Fallback untuk browser yang tidak mendukung permissions API
         setLocationState(prev => ({ ...prev, permissionStatus: 'idle' }));
         return false;
@@ -180,12 +179,8 @@ const useLocation = (options: UseLocationOptions = {}) => {
 
   const retryLocation = useCallback(async () => {
     clearLocation();
-    try {
-      const position = await requestLocation();
-      return position;
-    } catch (error) {
-      throw error;
-    }
+    const position = await requestLocation();
+    return position;
   }, [clearLocation, requestLocation]);
 
   // Auto request location jika diaktifkan
