@@ -96,10 +96,7 @@ const OperatorDashboard: React.FC = () => {
         </div>
 
         {/* Location Status */}
-        <div className="bg-white rounded-xl shadow-sm border p-4 sm:p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Status Lokasi</h2>
-          <LocationStatus />
-        </div>
+        <LocationStatus />
 
         {/* Search */}
         <div className="bg-white rounded-xl shadow-sm border p-4 sm:p-6">

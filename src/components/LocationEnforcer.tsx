@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { MapPin, AlertCircle } from 'lucide-react';
 import { useLocation } from '../contexts/LocationContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useLocation as useRouterLocation } from 'react-router-dom';
 
 const LocationEnforcer: React.FC = () => {
   const { hasLocation, setLocation } = useLocation();
   const { user } = useAuth();
+  const routerLocation = useRouterLocation();
   const [locationError, setLocationError] = useState<string | null>(null);
+  const requestTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const requestLocation = () => {
     if (!navigator.geolocation) {
@@ -26,7 +29,7 @@ const LocationEnforcer: React.FC = () => {
           timestamp: position.timestamp
         });
       },
-      (error) => {
+      (error) => {        
         let errorMessage = 'Gagal mendapatkan lokasi';
         
         switch (error.code) {
@@ -53,12 +56,26 @@ const LocationEnforcer: React.FC = () => {
     );
   };
 
-  // Auto-request location when component mounts if not available
+  // Request location setiap kali halaman berubah atau komponen mount
   useEffect(() => {
-    if (!hasLocation && navigator.geolocation && user?.peran === 'operator') {
-      requestLocation();
+    if (user?.peran === 'operator' && navigator.geolocation) {
+      // Clear previous timeout if exists
+      if (requestTimeoutRef.current) {
+        clearTimeout(requestTimeoutRef.current);
+      }
+      
+      // Delay sedikit untuk memastikan halaman sudah fully loaded
+      requestTimeoutRef.current = setTimeout(() => {
+        requestLocation();
+      }, 200);
+      
+      return () => {
+        if (requestTimeoutRef.current) {
+          clearTimeout(requestTimeoutRef.current);
+        }
+      };
     }
-  }, [hasLocation, user?.peran]);
+  }, [user?.peran, routerLocation.pathname]); // Trigger setiap kali pathname berubah
 
   // Show modal if location is not available and user is operator
   if (!hasLocation && user?.peran === 'operator') {

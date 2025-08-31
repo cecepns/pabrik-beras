@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLocation } from '../../contexts/LocationContext';
 import Layout from '../Layout';
+import LocationStatus from '../LocationStatus';
 import toast from 'react-hot-toast';
 import { ArrowLeft, Upload, MapPin, Calculator, Fuel } from 'lucide-react';
 import { getApiUrl, API_CONFIG } from '../../config/api';
@@ -153,6 +154,9 @@ const CreateOrder: React.FC = () => {
 
         <div className="bg-white rounded-xl shadow-sm border p-4 sm:p-6">
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Buat Order Baru</h1>
+
+          {/* Location Status */}
+          <LocationStatus />
 
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Customer Information */}
