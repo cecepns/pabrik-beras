@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../Layout';
+import LocationStatus from '../LocationStatus';
 import { Plus, Search, Eye } from 'lucide-react';
 
 interface Order {
@@ -91,6 +92,12 @@ const OperatorDashboard: React.FC = () => {
             <span className="hidden sm:inline">Buat Order Baru</span>
             <span className="sm:hidden">Buat Order</span>
           </Link>
+        </div>
+
+        {/* Location Status */}
+        <div className="bg-white rounded-xl shadow-sm border p-4 sm:p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-3">Status Lokasi</h2>
+          <LocationStatus />
         </div>
 
         {/* Search */}

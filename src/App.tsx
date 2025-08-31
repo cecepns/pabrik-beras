@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
 import { useAuth } from './contexts/AuthContext';
+import { LocationProvider, useLocation } from './contexts/LocationContext';
+import LocationGuard from './components/LocationGuard';
 import Login from './components/Login';
 import AdminDashboard from './components/admin/AdminDashboard';
 import OperatorDashboard from './components/operator/OperatorDashboard';
@@ -15,7 +17,7 @@ import ManageMachines from './components/admin/ManageMachines';
 import Settings from './components/admin/Settings';
 import Reports from './components/admin/Reports';
 
-function ProtectedRoute({ children, requireAdmin = false }) {
+function ProtectedRoute({ children, requireAdmin = false }: { children: React.ReactNode; requireAdmin?: boolean }) {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -37,6 +39,51 @@ function ProtectedRoute({ children, requireAdmin = false }) {
   return children;
 }
 
+function LocationProtectedRoute({ 
+  children, 
+  requireAdmin = false, 
+  requireLocation = true 
+}: { 
+  children: React.ReactNode; 
+  requireAdmin?: boolean; 
+  requireLocation?: boolean;
+}) {
+  const { user } = useAuth();
+  const { setLocation } = useLocation();
+
+  // Jika tidak memerlukan lokasi, gunakan ProtectedRoute biasa
+  if (!requireLocation) {
+    return <ProtectedRoute requireAdmin={requireAdmin}>{children}</ProtectedRoute>;
+  }
+
+  // Jika memerlukan lokasi, wrap dengan LocationGuard
+  return (
+    <ProtectedRoute requireAdmin={requireAdmin}>
+      <LocationGuard
+        title="Akses Lokasi Diperlukan"
+        description="Untuk memberikan layanan terbaik dan estimasi yang akurat, kami memerlukan akses ke lokasi Anda. Lokasi akan digunakan untuk perhitungan estimasi dan pengiriman."
+        allowSkip={false}
+        onLocationGranted={(position) => {
+          console.log('Lokasi berhasil diperoleh:', position.coords);
+          // Simpan lokasi ke context
+          setLocation({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            accuracy: position.coords.accuracy,
+            timestamp: position.timestamp,
+            address: `Lat: ${position.coords.latitude.toFixed(6)}, Lng: ${position.coords.longitude.toFixed(6)}`
+          });
+        }}
+        onLocationDenied={() => {
+          console.log('Lokasi ditolak');
+        }}
+      >
+        {children}
+      </LocationGuard>
+    </ProtectedRoute>
+  );
+}
+
 function AppRoutes() {
   const { user } = useAuth();
 
@@ -48,65 +95,65 @@ function AppRoutes() {
       />
       
       <Route path="/" element={
-        <ProtectedRoute>
+        <LocationProtectedRoute requireLocation={false}>
           {user?.peran === 'admin' ? <AdminDashboard /> : <OperatorDashboard />}
-        </ProtectedRoute>
+        </LocationProtectedRoute>
       } />
 
       {/* Operator Routes */}
       <Route path="/create-order" element={
-        <ProtectedRoute>
+        <LocationProtectedRoute requireLocation={true}>
           <CreateOrder />
-        </ProtectedRoute>
+        </LocationProtectedRoute>
       } />
       
       <Route path="/orders/:id" element={
-        <ProtectedRoute>
+        <LocationProtectedRoute requireLocation={false}>
           <OrderDetail />
-        </ProtectedRoute>
+        </LocationProtectedRoute>
       } />
 
       <Route path="/change-password" element={
-        <ProtectedRoute>
+        <LocationProtectedRoute requireLocation={false}>
           <ChangePassword />
-        </ProtectedRoute>
+        </LocationProtectedRoute>
       } />
 
       {/* Admin Routes */}
       <Route path="/admin/orders" element={
-        <ProtectedRoute requireAdmin>
+        <LocationProtectedRoute requireAdmin requireLocation={false}>
           <ManageOrders />
-        </ProtectedRoute>
+        </LocationProtectedRoute>
       } />
 
       <Route path="/admin/orders/:id" element={
-        <ProtectedRoute requireAdmin>
+        <LocationProtectedRoute requireAdmin requireLocation={false}>
           <OrderDetail isAdmin={true} />
-        </ProtectedRoute>
+        </LocationProtectedRoute>
       } />
 
       <Route path="/admin/users" element={
-        <ProtectedRoute requireAdmin>
+        <LocationProtectedRoute requireAdmin requireLocation={false}>
           <ManageUsers />
-        </ProtectedRoute>
+        </LocationProtectedRoute>
       } />
 
       <Route path="/admin/machines" element={
-        <ProtectedRoute requireAdmin>
+        <LocationProtectedRoute requireAdmin requireLocation={false}>
           <ManageMachines />
-        </ProtectedRoute>
+        </LocationProtectedRoute>
       } />
 
       <Route path="/admin/settings" element={
-        <ProtectedRoute requireAdmin>
+        <LocationProtectedRoute requireAdmin requireLocation={false}>
           <Settings />
-        </ProtectedRoute>
+        </LocationProtectedRoute>
       } />
 
       <Route path="/admin/reports" element={
-        <ProtectedRoute requireAdmin>
+        <LocationProtectedRoute requireAdmin requireLocation={false}>
           <Reports />
-        </ProtectedRoute>
+        </LocationProtectedRoute>
       } />
 
       {/* Catch all redirect */}
@@ -118,12 +165,14 @@ function AppRoutes() {
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <div className="min-h-screen bg-gray-50">
-          <AppRoutes />
-          <Toaster position="top-right" />
-        </div>
-      </Router>
+      <LocationProvider>
+        <Router>
+          <div className="min-h-screen bg-gray-50">
+            <AppRoutes />
+            <Toaster position="top-right" />
+          </div>
+        </Router>
+      </LocationProvider>
     </AuthProvider>
   );
 }

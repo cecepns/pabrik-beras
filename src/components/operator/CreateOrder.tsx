@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLocation } from '../../contexts/LocationContext';
 import Layout from '../Layout';
 import toast from 'react-hot-toast';
 import { ArrowLeft, Upload, MapPin, Calculator, Fuel } from 'lucide-react';
@@ -9,7 +10,7 @@ const CreateOrder: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [gpsLoading, setGpsLoading] = useState(false);
+  const { location, hasLocation } = useLocation();
   const [settings, setSettings] = useState({ harga_per_kg: 0, konsumsi_bbm_per_kg: 0 });
   
   const [formData, setFormData] = useState({
@@ -26,7 +27,6 @@ const CreateOrder: React.FC = () => {
 
   useEffect(() => {
     fetchSettings();
-    getCurrentLocation();
   }, []);
 
   // Debug log untuk settings
@@ -53,49 +53,15 @@ const CreateOrder: React.FC = () => {
     }
   };
 
-  const getCurrentLocation = () => {
-    setGpsLoading(true);
-    
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          try {
-            // For demo purposes, we'll use a simple address format
-            const { latitude, longitude } = position.coords;
-            const address = `Lat: ${latitude.toFixed(6)}, Lng: ${longitude.toFixed(6)}`;
-            
-            setFormData(prev => ({
-              ...prev,
-              alamat_pengambilan: address
-            }));
-          } catch (error) {
-            console.error('Error getting address:', error);
-            setFormData(prev => ({
-              ...prev,
-              alamat_pengambilan: 'Alamat tidak dapat dideteksi'
-            }));
-          } finally {
-            setGpsLoading(false);
-          }
-        },
-        (error) => {
-          console.error('Error getting location:', error);
-          setFormData(prev => ({
-            ...prev,
-            alamat_pengambilan: 'GPS tidak dapat diakses'
-          }));
-          setGpsLoading(false);
-          toast.error('Tidak dapat mengakses GPS. Pastikan izin lokasi diberikan.');
-        }
-      );
-    } else {
+  // Update alamat pengambilan ketika lokasi tersedia
+  useEffect(() => {
+    if (location && location.address) {
       setFormData(prev => ({
         ...prev,
-        alamat_pengambilan: 'GPS tidak tersedia'
+        alamat_pengambilan: location.address || 'Lokasi tidak tersedia'
       }));
-      setGpsLoading(false);
     }
-  };
+  }, [location]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -393,10 +359,10 @@ const CreateOrder: React.FC = () => {
                 <div className="flex items-center space-x-2 mb-2">
                   <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500" />
                   <label className="text-xs sm:text-sm text-gray-600">Alamat Pengambilan (GPS)</label>
-                  {gpsLoading && <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-green-500"></div>}
+                  {hasLocation && <div className="w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full"></div>}
                 </div>
                 <p className="text-xs sm:text-sm text-gray-900 bg-white p-2 rounded border">
-                  {formData.alamat_pengambilan || 'Mengambil lokasi...'}
+                  {formData.alamat_pengambilan || 'Lokasi belum diperoleh'}
                 </p>
               </div>
             </div>
@@ -429,6 +395,8 @@ const CreateOrder: React.FC = () => {
           </form>
         </div>
       </div>
+
+
     </Layout>
   );
 };
