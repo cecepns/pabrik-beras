@@ -41,9 +41,6 @@ const LocationEnforcer: React.FC = () => {
           case error.POSITION_UNAVAILABLE:
             errorMessage = 'Lokasi tidak tersedia';
             break;
-          case error.TIMEOUT:
-            errorMessage = 'Waktu habis';
-            break;
           default:
             errorMessage = 'Terjadi kesalahan';
         }
@@ -53,7 +50,6 @@ const LocationEnforcer: React.FC = () => {
       },
       {
         enableHighAccuracy: true,
-        timeout: 10000,
         maximumAge: 0
       }
     );
