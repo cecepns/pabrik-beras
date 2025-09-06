@@ -128,14 +128,14 @@ const CreateOrder: React.FC = () => {
   const estimasiHarga = (() => {
     const berat = parseFloat(formData.berat_gabah_kg) || 0;
     const hargaPerKg = settings.harga_per_kg || 0;
-    const result = berat * hargaPerKg;
+    const result = parseFloat((berat * hargaPerKg) as unknown as string);
     return result;
   })();
 
   const estimasiKonsumsi = (() => {
     const berat = parseFloat(formData.berat_gabah_kg) || 0;
     const konsumsiPerKg = settings.konsumsi_bbm_per_kg || 0;
-    const result = berat * konsumsiPerKg;
+    const result = parseFloat((berat * konsumsiPerKg) as unknown as string);
     return result;
   })();
 
