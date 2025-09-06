@@ -129,14 +129,14 @@ const CreateOrder: React.FC = () => {
     const berat = parseFloat(formData.berat_gabah_kg) || 0;
     const hargaPerKg = settings.harga_per_kg || 0;
     const result = berat * hargaPerKg;
-    return Number(result.toString().replace(/(\.\d*?[1-9])0+$/g, '$1').replace(/\.0+$/, ''));
+    return result;
   })();
 
   const estimasiKonsumsi = (() => {
     const berat = parseFloat(formData.berat_gabah_kg) || 0;
     const konsumsiPerKg = settings.konsumsi_bbm_per_kg || 0;
     const result = berat * konsumsiPerKg;
-    return Number(result.toString().replace(/(\.\d*?[1-9])0+$/g, '$1').replace(/\.0+$/, ''));
+    return result;
   })();
 
   return (
@@ -250,7 +250,7 @@ const CreateOrder: React.FC = () => {
                     Rp {estimasiHarga.toLocaleString('id-ID')}
                   </p>
                   <p className="text-xs text-green-600">
-                    {formData.berat_gabah_kg} kg × Rp {settings.harga_per_kg.toLocaleString('id-ID')}/kg
+                    {parseFloat(formData.berat_gabah_kg).toPrecision()} kg × Rp {settings.harga_per_kg.toLocaleString('id-ID')}/kg
                   </p>
                 </div>
 
@@ -263,7 +263,7 @@ const CreateOrder: React.FC = () => {
                     {estimasiKonsumsi.toFixed(2)} L
                   </p>
                   <p className="text-xs text-blue-600">
-                    {formData.berat_gabah_kg} kg × {settings.konsumsi_bbm_per_kg} L/kg
+                    {parseFloat(formData.berat_gabah_kg).toPrecision()} kg × {settings.konsumsi_bbm_per_kg} L/kg
                   </p>
                 </div>
               </div>
