@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLocation } from '../../contexts/LocationContext';
@@ -63,8 +63,8 @@ const CreateOrder: React.FC = () => {
     }
   }, [location]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+  const handleInputChange = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.currentTarget;
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -177,7 +177,7 @@ const CreateOrder: React.FC = () => {
                   type="text"
                   name="nama_pelanggan"
                   value={formData.nama_pelanggan}
-                  onChange={handleInputChange}
+                  onInput={handleInputChange}
                   className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm sm:text-base"
                   required
                 />
@@ -191,7 +191,7 @@ const CreateOrder: React.FC = () => {
                   type="text"
                   name="kontak_pelanggan"
                   value={formData.kontak_pelanggan}
-                  onChange={handleInputChange}
+                  onInput={handleInputChange}
                   className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm sm:text-base"
                   placeholder="Nomor telepon (opsional)"
                 />
@@ -206,7 +206,7 @@ const CreateOrder: React.FC = () => {
                 type="text"
                 name="nama_karnet"
                 value={formData.nama_karnet}
-                onChange={handleInputChange}
+                onInput={handleInputChange}
                 className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm sm:text-base"
                 placeholder="Nama karnet (opsional)"
               />
@@ -222,7 +222,7 @@ const CreateOrder: React.FC = () => {
                   type="number"
                   name="jumlah_karung"
                   value={formData.jumlah_karung}
-                  onChange={handleInputChange}
+                  onInput={handleInputChange}
                   className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm sm:text-base"
                   min="1"
                   required
@@ -237,7 +237,7 @@ const CreateOrder: React.FC = () => {
                   type="number"
                   name="berat_gabah_kg"
                   value={formData.berat_gabah_kg}
-                  onChange={handleInputChange}
+                  onInput={handleInputChange}
                   className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm sm:text-base"
                   min="0.01"
                   step="0.01"
@@ -327,7 +327,7 @@ const CreateOrder: React.FC = () => {
                 type="text"
                 name="lokasi_pengolahan"
                 value={formData.lokasi_pengolahan}
-                onChange={handleInputChange}
+                onInput={handleInputChange}
                 className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm sm:text-base"
                 placeholder="Masukkan tempat pengolahan"
                 required
@@ -341,7 +341,7 @@ const CreateOrder: React.FC = () => {
               <textarea
                 name="catatan"
                 value={formData.catatan}
-                onChange={handleInputChange}
+                onInput={handleInputChange}
                 rows={3}
                 className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm sm:text-base"
                 placeholder="Catatan tambahan (opsional)"
