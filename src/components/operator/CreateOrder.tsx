@@ -129,14 +129,22 @@ const CreateOrder: React.FC = () => {
     const berat = parseFloat(formData.berat_gabah_kg) || 0;
     const hargaPerKg = settings.harga_per_kg || 0;
     const result = berat * hargaPerKg;
-    return result;
+    return result.toLocaleString('id-ID');
   })();
 
   const estimasiKonsumsi = (() => {
     const berat = parseFloat(formData.berat_gabah_kg) || 0;
     const konsumsiPerKg = settings.konsumsi_bbm_per_kg || 0;
     const result = berat * konsumsiPerKg;
-    return result;
+    return result.toLocaleString('id-ID');
+  })();
+
+  const displayBeratGabah = (() => {
+    const berat = parseFloat(formData.berat_gabah_kg) || 0;
+    const formatRibuan = (num: number) => {
+      return num.toLocaleString('id-ID');
+    };
+    return formatRibuan(berat) + ' kg';;
   })();
 
   return (
@@ -247,10 +255,10 @@ const CreateOrder: React.FC = () => {
                     <span className="font-medium text-green-800 text-sm sm:text-base">Estimasi Harga Jasa</span>
                   </div>
                   <p className="text-xl sm:text-2xl font-bold text-green-900">
-                    Rp {estimasiHarga.toLocaleString('id-ID')}
+                    Rp {estimasiHarga}
                   </p>
                   <p className="text-xs text-green-600">
-                    {parseFloat(formData.berat_gabah_kg).toPrecision()} kg × Rp {settings.harga_per_kg.toLocaleString('id-ID')}/kg
+                    {displayBeratGabah} × Rp {settings.harga_per_kg.toLocaleString('id-ID')}/kg
                   </p>
                 </div>
 
@@ -260,10 +268,10 @@ const CreateOrder: React.FC = () => {
                     <span className="font-medium text-blue-800 text-sm sm:text-base">Estimasi Konsumsi BBM</span>
                   </div>
                   <p className="text-xl sm:text-2xl font-bold text-blue-900">
-                    {estimasiKonsumsi.toFixed(2)} L
+                    {estimasiKonsumsi} L
                   </p>
                   <p className="text-xs text-blue-600">
-                    {parseFloat(formData.berat_gabah_kg).toPrecision()} kg × {settings.konsumsi_bbm_per_kg} L/kg
+                    {displayBeratGabah} × {settings.konsumsi_bbm_per_kg} L/kg
                   </p>
                 </div>
               </div>
