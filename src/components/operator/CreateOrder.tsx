@@ -125,19 +125,19 @@ const CreateOrder: React.FC = () => {
   };
 
   // Kalkulasi estimasi harga dan konsumsi BBM
-  const estimasiHarga = useMemo(() => {
+  const estimasiHarga = (() => {
     const berat = parseFloat(formData.berat_gabah_kg) || 0;
     const hargaPerKg = settings.harga_per_kg || 0;
     const result = berat * hargaPerKg;
     return result;
-  }, [formData.berat_gabah_kg, settings.harga_per_kg]);
+  })();
 
-  const estimasiKonsumsi = useMemo(() => {
+  const estimasiKonsumsi = (() => {
     const berat = parseFloat(formData.berat_gabah_kg) || 0;
     const konsumsiPerKg = settings.konsumsi_bbm_per_kg || 0;
     const result = berat * konsumsiPerKg;
     return result;
-  }, [formData.berat_gabah_kg, settings.konsumsi_bbm_per_kg]);
+  })();
 
   return (
     <Layout>
