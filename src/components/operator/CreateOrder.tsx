@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLocation } from '../../contexts/LocationContext';
@@ -63,13 +63,36 @@ const CreateOrder: React.FC = () => {
     }
   }, [location]);
 
-  const handleInputChange = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = useCallback((e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.currentTarget;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+    
+    // Special handling for numeric inputs to prevent calculation bugs
+    if (name === 'berat_gabah_kg') {
+      // Remove any non-numeric characters except decimal point
+      const sanitizedValue = value.replace(/[^0-9.]/g, '');
+      // Ensure only one decimal point
+      const parts = sanitizedValue.split('.');
+      const finalValue = parts.length > 2 ? parts[0] + '.' + parts.slice(1).join('') : sanitizedValue;
+      
+      setFormData(prev => ({
+        ...prev,
+        [name]: finalValue
+      }));
+    } else if (name === 'jumlah_karung') {
+      // Only allow integers for jumlah_karung
+      const sanitizedValue = value.replace(/[^0-9]/g, '');
+      
+      setFormData(prev => ({
+        ...prev,
+        [name]: sanitizedValue
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  }, [setFormData]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -124,27 +147,42 @@ const CreateOrder: React.FC = () => {
     }
   };
 
+  // Helper function for safe number parsing
+  const safeParseFloat = (value: string): number => {
+    if (!value || value.trim() === '') return 0;
+    
+    // Remove any non-numeric characters except decimal point and minus sign
+    const cleanValue = value.replace(/[^0-9.-]/g, '');
+    
+    // Handle multiple decimal points by keeping only the first one
+    const parts = cleanValue.split('.');
+    const normalizedValue = parts.length > 2 ? parts[0] + '.' + parts.slice(1).join('') : cleanValue;
+    
+    const parsed = parseFloat(normalizedValue);
+    return isNaN(parsed) ? 0 : parsed;
+  };
+
   // Kalkulasi estimasi harga dan konsumsi BBM
   const estimasiHarga = (() => {
-    const berat = parseFloat(formData.berat_gabah_kg) || 0;
+    const berat = safeParseFloat(formData.berat_gabah_kg);
     const hargaPerKg = settings.harga_per_kg || 0;
-    const result = berat * hargaPerKg;
+    const result = Math.round(berat * hargaPerKg);
     return result.toLocaleString('id-ID');
   })();
 
   const estimasiKonsumsi = (() => {
-    const berat = parseFloat(formData.berat_gabah_kg) || 0;
+    const berat = safeParseFloat(formData.berat_gabah_kg);
     const konsumsiPerKg = settings.konsumsi_bbm_per_kg || 0;
-    const result = berat * konsumsiPerKg;
+    const result = Math.round((berat * konsumsiPerKg) * 100) / 100; // Round to 2 decimal places
     return result.toLocaleString('id-ID');
   })();
 
   const displayBeratGabah = (() => {
-    const berat = parseFloat(formData.berat_gabah_kg) || 0;
+    const berat = safeParseFloat(formData.berat_gabah_kg);
     const formatRibuan = (num: number) => {
       return num.toLocaleString('id-ID');
     };
-    return formatRibuan(berat) + ' kg';;
+    return formatRibuan(berat) + ' kg';
   })();
 
   return (
@@ -219,12 +257,14 @@ const CreateOrder: React.FC = () => {
                   Jumlah Karung *
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   name="jumlah_karung"
                   value={formData.jumlah_karung}
                   onInput={handleInputChange}
                   className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm sm:text-base"
-                  min="1"
+                  placeholder="Masukkan jumlah karung (contoh: 10)"
+                  pattern="[0-9]+"
+                  inputMode="numeric"
                   required
                 />
               </div>
@@ -234,13 +274,14 @@ const CreateOrder: React.FC = () => {
                   Total Berat Gabah (kg) *
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   name="berat_gabah_kg"
                   value={formData.berat_gabah_kg}
                   onInput={handleInputChange}
                   className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm sm:text-base"
-                  min="0.01"
-                  step="0.01"
+                  placeholder="Masukkan berat gabah (contoh: 300 atau 300.5)"
+                  pattern="[0-9]+(\.[0-9]+)?"
+                  inputMode="decimal"
                   required
                 />
               </div>
