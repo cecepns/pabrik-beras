@@ -162,27 +162,37 @@ const CreateOrder: React.FC = () => {
     return isNaN(parsed) ? 0 : parsed;
   };
 
+  // Helper function for consistent number formatting across devices
+  const formatNumber = (num: number, decimals: number = 0): string => {
+    if (num === 0) return '0';
+    
+    const rounded = decimals > 0 ? Math.round(num * Math.pow(10, decimals)) / Math.pow(10, decimals) : Math.round(num);
+    const parts = rounded.toString().split('.');
+    
+    // Add thousand separators to integer part
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    
+    return parts.join(',');
+  };
+
   // Kalkulasi estimasi harga dan konsumsi BBM
   const estimasiHarga = (() => {
     const berat = safeParseFloat(formData.berat_gabah_kg);
     const hargaPerKg = settings.harga_per_kg || 0;
-    const result = Math.round(berat * hargaPerKg);
-    return result.toLocaleString('id-ID');
+    const result = berat * hargaPerKg;
+    return formatNumber(result, 0);
   })();
 
   const estimasiKonsumsi = (() => {
     const berat = safeParseFloat(formData.berat_gabah_kg);
     const konsumsiPerKg = settings.konsumsi_bbm_per_kg || 0;
-    const result = Math.round((berat * konsumsiPerKg) * 100) / 100; // Round to 2 decimal places
-    return result.toLocaleString('id-ID');
+    const result = berat * konsumsiPerKg;
+    return formatNumber(result, 2);
   })();
 
   const displayBeratGabah = (() => {
     const berat = safeParseFloat(formData.berat_gabah_kg);
-    const formatRibuan = (num: number) => {
-      return num.toLocaleString('id-ID');
-    };
-    return formatRibuan(berat) + ' kg';
+    return formatNumber(berat, 0) + ' kg';
   })();
 
   return (
@@ -270,6 +280,7 @@ const CreateOrder: React.FC = () => {
               </div>
 
               <div>
+                <div className="text-xs">debug total berat gabah : {formData.berat_gabah_kg} kg</div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Total Berat Gabah (kg) *
                 </label>
@@ -299,7 +310,7 @@ const CreateOrder: React.FC = () => {
                     Rp {estimasiHarga}
                   </p>
                   <p className="text-xs text-green-600">
-                    {displayBeratGabah} × Rp {settings.harga_per_kg.toLocaleString('id-ID')}/kg
+                    {displayBeratGabah} × Rp {formatNumber(settings.harga_per_kg, 0)}/kg
                   </p>
                 </div>
 
@@ -312,7 +323,7 @@ const CreateOrder: React.FC = () => {
                     {estimasiKonsumsi} L
                   </p>
                   <p className="text-xs text-blue-600">
-                    {displayBeratGabah} × {settings.konsumsi_bbm_per_kg} L/kg
+                    {displayBeratGabah} × {formatNumber(settings.konsumsi_bbm_per_kg, 1)} L/kg
                   </p>
                 </div>
               </div>
